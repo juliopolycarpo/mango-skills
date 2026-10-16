@@ -13,8 +13,8 @@ missing evidence), not the surface word; swapping words to look human is not the
 
 ## Rules
 
-- Lead with the fact, decision, or result. Every sentence must add something the reader does not
-  already have from the text, the diff, or the thread.
+- Lead with the fact, decision, or result. Keep the context the reader needs to act; cut
+  repetition that adds no information.
 - Name the actor, mechanism, and observable effect. Prefer a number, command, version, or exact
   error over an adjective. Keep real uncertainty, stated once and specifically.
 - State points directly. Cut staging: "not X but Y" contrasts nobody raised, one-line closers,
@@ -27,8 +27,8 @@ missing evidence), not the surface word; swapping words to look human is not the
   comma or period either. Use a colon to introduce a consequence, example, or list ("reads are
   bounded at 5 s: a peer that never answers fails the call"). Straight quotes in your own text.
 - Formatting follows the surface: plain text in commit messages, the repository template in PRs
-  and issues, sentence-case headings, bold only for a term the reader must not miss, tables for
-  comparisons, perf results, and review summaries. No decorative emojis or arrows.
+  and issues, sentence-case headings, bold only for a term the reader must not miss, tables
+  when comparisons or results are easier to scan. No decorative emojis or arrows.
 - Follow the reader's language and the destination's contribution rules. Before publishing,
   remove credentials, private tracking references, local paths, and internal-only material.
   Preserve public issue references and information the author intentionally made public.
@@ -51,7 +51,7 @@ formats. Leave quoted or discussed phrases alone.
 Load only the module for the text being written. Preserve the destination's required template
 and format while editing its wording.
 
-- [Pattern catalog](references/patterns.md): full editing pass or self-audit, with tell strength.
+- [Pattern catalog](references/patterns.md): contextual examples for an editing pass or self-audit.
 - [Commits](references/commits.md): subjects, bodies, squash bodies.
 - [Pull requests](references/pull-requests.md): titles, bodies, validation.
 - [Review replies](references/reviews.md): findings, thread replies, review summary comments.

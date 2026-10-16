@@ -1,13 +1,12 @@
 # Pattern catalog
 
-Mark every tell in the whole text first, strongest first, then rewrite each point instead of
-patching phrases. Look at paragraph shape too: a contrast split over two sentences, three
-parallel examples, or the same closer after each section is one tell at a larger scale.
+Inspect the relevant passage for defects before rewriting phrases. Look at paragraph shape
+too: a contrast split over two sentences, three parallel examples, or the same closer after
+each section is one tell at a larger scale.
 
-Strength matters. Structural tells (sections A, D, E) persist across model releases and justify
-an edit on one sighting. Word lists (section B) age with each model generation and are _weak
-alone_: act when several cluster in one passage. A person can make any of these choices on
-purpose, so keep one that carries information.
+These patterns are editing prompts, not proof of a defect. Edit when a pattern obscures meaning,
+adds repetition, or conflicts with the destination's format. A word-list match alone does not
+justify a change. Preserve intentional choices that carry information.
 
 ## A. Staging instead of stating
 
@@ -44,7 +43,7 @@ purpose, so keep one that carries information.
   relationship if the source gives it; otherwise keep the vague wording rather than invent one.
 - **Avoiding is/has.** "Serves as", "stands as", "functions as", "boasts", "features". Write
   `is` or `has`.
-- **Word list** (_weak alone_, ages fast): additionally, align with, crucial, delve, enhance,
+- **Word list** (_weak alone_): additionally, align with, crucial, delve, enhance,
   foster, garner, intricate, landscape, leverage, meticulous, multifaceted, showcase, tapestry,
   underscore, utilize, vibrant. Abstract metaphor nouns used figuratively: north star,
   flywheel, wedge, ratchet. Technical senses (attack surface, API surface, gate a feature) are
@@ -57,8 +56,8 @@ purpose, so keep one that carries information.
 - **Uniform rhythm.** Every sentence the same length or opening ("This…", "It…"). Vary it by
   merging or reordering, not by adding flourishes.
 - **Dashes everywhere.** A dash used to avoid deciding how clauses relate. One dash is _weak
-  alone_. Do not trade it for a comma or period by reflex: newer models that avoid dashes
-  overuse those instead. Pick the relation (because, so, which, colon) or split.
+  alone_. Do not trade it for a comma or period by reflex. Pick the relation (because, so,
+  which, colon) or split.
 - **Stacked hedges.** "Could potentially", "might arguably", "it may be possible that". Keep one
   accurate qualifier; keep scope statements and real caveats. Single hedges are normal.
 - **Filler.** "In order to" → "to"; "due to the fact that" → "because"; "it is important to
@@ -78,14 +77,14 @@ purpose, so keep one that carries information.
 
 ## E. Leftovers
 
-Remove these outright.
+Remove drafting residue; preserve intentional examples, template prompts, and quoted material.
 
 - **Chat residue.** "Great question", "Certainly!", "You're absolutely right", "I hope this
   helps", "Let me know if", "Would you like me to", "Here is a…". Keep the content inside.
 - **Knowledge and source hedges.** "As of my last update", "based on available information",
   "not widely documented", followed by a guess. State what was checked and what is unknown.
-- **Placeholders.** `[Insert X]`, `<your value>`, `TODO: fill`, `2026-xx-xx`, unchecked template
-  prompts left as text.
+- **Placeholders.** `[Insert X]`, `<your value>`, `TODO: fill`, `2026-xx-xx`, or template
+  prompts accidentally left in completed text.
 - **Tool markup.** `:contentReference[oaicite:N]`, `citeturn0search0`, `[cite: N]`,
   `utm_source=chatgpt.com`, `[attached_file:1]`.
 - **Process narration.** "Per reviewer feedback", "preserved X while improving Y", "address

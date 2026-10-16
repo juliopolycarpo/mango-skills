@@ -12,5 +12,6 @@ Readers scan docs to do something. Give them the command, the behavior, or the l
 - Prefer a number or a named behavior over an adjective. "Cold start under 50 ms on Bun 1.3"
   beats "fast startup".
 - Describe the subject, not the document: skip "this guide covers" and "the table below shows".
-  Mention a previous version only in changelogs, release notes, and migration guides.
-- If a sentence would fit any project's docs unchanged, delete it.
+  Mention previous versions when they explain compatibility, migration, or a reproducible failure.
+- Cut generic advice that adds no actionable constraint; retain prerequisites and rules needed
+  to execute the document alone.

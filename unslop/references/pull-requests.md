@@ -7,8 +7,10 @@ with facts from the current diff.
   "Improvements to X".
 - Summary: the problem, then the resulting behavior, at the length the change needs.
 - Changes: list notable decisions, not every touched file. Skip items the diff makes obvious.
-  Template headings, checklists, and existing tables stay; refresh a table only from a new
-  measurement.
+  Keep required template headings and checklists. Preserve valid measurement receipts with
+  their original SHA and conditions; update measured values only from a new measurement.
+  Correct or remove inaccurate or obsolete table rows using evidence, including nonmeasurement
+  matrices and claims invalidated by source inspection.
 - Validation: name the exact commands and results. "Tests pass" says nothing; "`bun run test`
   passes on abc1234" does. Leave unperformed checks unchecked and say why.
 - Risk and migration: state what breaks and what users must do. Omit the section's content

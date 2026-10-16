@@ -5,7 +5,7 @@ Findings and replies should be short enough to act on without rereading.
 ## Findings
 
 - Lead with the defect, then the failing input or state, then the fix if obvious. "`parse`
-  returns `NaN` for `" 42"`; trim before `Number()`."
+  returns `0` for `" "`; reject blank input before `Number()`."
 - Anchor to the line and name the symbol. Skip "I noticed that" and "It might be worth".
 - Separate blocking defects from optional suggestions with a plain prefix such as "nit:".
 - No praise padding before or after the finding.
@@ -22,6 +22,6 @@ Findings and replies should be short enough to act on without rereading.
 
 ## Review summary comments
 
-When posting a review or a round of fixes as one comment, use a table with one row per finding
-(location, finding, severity or decision, commit) followed by two or three sentences on what
-changed overall. No preamble and no closing offer.
+Use a short paragraph for one finding. Use a table when comparing findings helps, with
+location, defect, severity or decision, and the fixing commit where available. Add a summary
+only for consequences absent from the findings. Skip preambles and closing offers.
