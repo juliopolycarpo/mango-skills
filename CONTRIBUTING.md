@@ -31,6 +31,10 @@ Individual commands are `bun run validate`, `bun test`, `bun run test:python`,
 The helper smoke uses synthetic Git history and named fakes, with no registry or GitHub
 requests. CI configures Linux and Windows checks.
 
+Keep repeated readiness documents and shared GitHub query sections identical. The repository's
+`scripts/shared-guidance.test.mjs` checks these copies; update each copy together. The complete
+copies stay inside their skill directories so installed skills need no sibling resources.
+
 Use Conventional Commit subjects such as `fix(rebase-pr): preserve the recorded remote head`
 and a body describing why the change is needed. Follow any additional contribution policy
 adopted by the repository. Keep source attribution with each independently copied skill.

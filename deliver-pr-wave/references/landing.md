@@ -99,7 +99,9 @@ Use a train when a ruleset forces up-to-date branches, so only one PR can merge 
 - Bound scripted train batches and watch duration to the current runner and tool limits.
   Stop or report a unit on conflicts, failed gates, or unresolved threads; continue independent
   units only when ordering and authorization allow it.
-- Use REST for PR state, and read only the latest check run per name.
+- Use REST for PR state. Match checks to the current head SHA and keep the latest attempt
+  for each workflow, app, and check name; repeated names from different workflows remain
+  separate checks.
 - Create each squash message from its final diff using the local squash workflow; preserve
   policy-required sign-offs and legitimate contributor trailers.
 - Reviews can arrive after CI goes green, and a bot may post a late finding. Re-check threads
