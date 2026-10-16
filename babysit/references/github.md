@@ -76,9 +76,12 @@ and still succeeds; use `-F` for file input.
 ## Resolve verified fixes
 
 ```bash
-gh api graphql \
+result=$(gh api graphql \
   -f query='mutation($threadId:ID!){resolveReviewThread(input:{threadId:$threadId}){thread{id,isResolved}}}' \
-  -f threadId="$thread_id"
+  -f threadId="$thread_id") || exit 1
+jq -e --arg thread_id "$thread_id" \
+  '.errors == null and .data.resolveReviewThread.thread.id == $thread_id and .data.resolveReviewThread.thread.isResolved == true' \
+  >/dev/null <<<"$result" || exit 1
 ```
 
 Re-fetch to confirm resolution and include the thread in the final sweep. Do not resolve
