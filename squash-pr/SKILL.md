@@ -25,9 +25,8 @@ cannot preserve their original signatures.
    you reviewed; it is the only SHA you may merge. Complete the
    [readiness gates](references/readiness.md) for that SHA before landing and refresh them
    immediately before the merge.
-2. Read the base's last merges to copy the repository's layout:
-   `git log -5 --format='%h %s%n%b%n---' <fetched-base-ref>`. See
-   [message shapes](references/shapes.md).
+2. Read recent verified-base commits and contribution rules to establish the repository's
+   [message shape](references/shapes.md).
 3. Draft the subject separately: the PR title in the repository's style, including its
    PR-number convention. For Conventional Commits, carry any `!` from child commits; it does
    not survive automatically. Write only the body and footers in a unique file

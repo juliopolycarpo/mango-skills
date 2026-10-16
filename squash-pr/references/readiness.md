@@ -31,7 +31,7 @@ gh pr view "$pr_number" --repo "$repo_slug" --json \
   checks, comments and threads immediately before landing. Record hosted checks, local checks
   and combined-source evidence separately.
 
-Use `gh pr checks <n> --repo <slug> --watch` to wait for checks, then inspect the final
+Use `gh pr checks <n> --repo <slug> --watch --interval 30` to wait for checks, then inspect the final
 results and reviews. Exit code 8 from a check lookup means pending checks, not a green set.
 For repeated polling, use intervals of 30–60 seconds or slower.
 

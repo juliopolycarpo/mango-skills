@@ -14,8 +14,8 @@ protection endpoint, so `.../branches/main/protection` can return 404 while rule
 - Bypass capability does not establish permission to use it. Honor repository policy and task
   authorization; never infer an approval waiver from a green check set or account privileges.
   Do not bypass failing checks or unresolved actionable feedback.
-- `CLEAN` on a PR stacked on a feature branch proves nothing: rulesets and most workflows only
-  target the default branch. Check `baseRefName` and the checks again after retargeting.
+- `CLEAN` qualifies the current base only. Feature and default branches may have different
+  rules and workflow triggers. Check `baseRefName`, applicable rules, and checks after retargeting.
 - A cancelled, superseded run in the rollup is not a failure. Read the latest check run per
   name, and distinguish repeated check names by workflow and app. Several workflows can emit
   the same required name (for example `Gate`).
@@ -106,8 +106,8 @@ Use a train when a ruleset forces up-to-date branches, so only one PR can merge 
   policy-required sign-offs and legitimate contributor trailers.
 - Reviews can arrive after CI goes green, and a bot may post a late finding. Re-check threads
   immediately before each merge.
-- Merge agents go idle when their CI watch expires. Compare open PRs' check state with the
-  running agents and resume any agent whose PR is green.
+- When a watch expires, inspect its process or agent status and the PR's live check state.
+  Resume unfinished work as needed; an expired observation does not establish process exit.
 - Diagnose queued or repeated failures from live run state and logs. Prefer supported rerun
   or cancellation controls within scope. Do not rewrite history merely to trigger CI; any
   branch update needs authorization, an exact lease when rewritten, and fresh qualification.

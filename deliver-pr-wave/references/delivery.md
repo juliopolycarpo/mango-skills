@@ -53,9 +53,11 @@ Read required checks from live rules, including rulesets. Query failures block r
 Watch checks to completion and inspect fresh human and automatic reviews afterward. For a
 wave, use one poller with paginated REST check runs and commit statuses at 90 seconds or slower;
 keep GraphQL for review threads. Distinguish tested SHA, workflow, app, run attempt, and latest
-replacement when names repeat. `gh pr checks` exits 8 for pending checks; parse valid JSON
-without treating that status as an empty check set. Fetch live job logs through
-`gh api repos/<slug>/actions/jobs/<id>/logs` when needed.
+replacement when names repeat. For `gh pr checks --json`, require a successful lookup and
+inspect every check bucket; exit 0 does not mean the checks passed. With tabular output,
+exit 8 means pending checks. Download completed-job logs through
+`gh api repos/<slug>/actions/jobs/<id>/logs`, including while other jobs in the run continue.
+Use the Actions web UI for running-job output; unavailable logs do not establish job failure.
 
 Inspect conversation comments, reviews, and every page of GraphQL `reviewThreads(first:100,
 after:$cursor)` on the pull request. For each page require no GraphQL errors, a non-null

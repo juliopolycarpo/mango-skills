@@ -46,9 +46,9 @@ step the request covers.
 
 Verify each worktree's branch, head, and intended base before editing. Preserve intended local
 commits and run only missing setup. Complete focused validation and required repository checks,
-then review behavior and upstream interactions at the actual unit head. Run a Reviewer on work
-touching concurrency, redaction, framing, dedup, or verdict logic. Wait for every requested
-agent and review result before declaring that unit complete.
+then review behavior and upstream interactions at the actual unit head. Delegate defect review
+when an independent pass helps assess the change's risk and delegation is permitted. Wait for
+every requested agent and review result before declaring that unit complete.
 
 Coordinate hosted checks across the wave. Evaluate the current SHA, workflow, and run attempt;
 superseded checks or historical environment failures do not establish current readiness. Use
