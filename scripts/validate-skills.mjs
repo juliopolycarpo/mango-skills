@@ -114,15 +114,16 @@ function markdownLinks(source, fail) {
   }
   return links;
 }
-function checkMarkdown(path, directory, fail) {
+function checkMarkdown(path, directory, fail, scope = "skill directory") {
   if (!physicallyInside(directory, path)) {
     fail(
       relative(directory, path).replaceAll("\\", "/"),
-      "local resource inside the skill directory",
+      `local resource inside the ${scope}`,
     );
-    return;
+    return [];
   }
   const source = textOf(path);
+  const targets = [];
   for (const link of markdownLinks(source, fail)) {
     if (/^(?:[a-z][a-z0-9+.-]*:|\/\/)/i.test(link)) continue;
     let destination, anchor;
@@ -143,17 +144,19 @@ function checkMarkdown(path, directory, fail) {
       !inside(directory, destination)
       || (existsSync(destination) && !physicallyInside(directory, destination))
     ) {
-      fail(link, "local target inside the skill directory");
+      fail(link, `local target inside the ${scope}`);
       continue;
     }
     if (!existsSync(destination)) {
       fail(link, `existing local target (${destination})`);
       continue;
     }
+    targets.push(destination);
     if (anchor && /\.md$/i.test(destination) && !headingAnchors(textOf(destination)).has(anchor)) {
       fail(link, `existing heading anchor in ${destination}`);
     }
   }
+  return targets;
 }
 function checkSvg(path, fail) {
   let root, depth = 0, titleDepth = 0, title = "";
@@ -257,7 +260,7 @@ function checkMetadata(directory, name, fail) {
   }
 }
 
-/** Validate every bundled skill and its bundled Markdown; returns diagnostics without changing files. Example: validateSkills('./'). */
+/** Validate skill bundles and the optional README inventory without changing files. Example: validateSkills('./'). */
 export function validateSkills(root = resolve(here, "..")) {
   root = resolve(root);
   const errors = [];
@@ -266,14 +269,31 @@ export function validateSkills(root = resolve(here, "..")) {
       `${relative(root, path) || "."}: expected ${expected}; received ${describe(value)}`,
     );
   const skills = readdirSync(root, { withFileTypes: true }).filter((entry) =>
-    entry.isDirectory() && existsSync(resolve(root, entry.name, "SKILL.md"))
+    entry.isDirectory() && (
+      existsSync(resolve(root, entry.name, "SKILL.md"))
+      || existsSync(resolve(root, entry.name, "agents/openai.yaml"))
+    )
   );
   if (!skills.length) failAt(root)(0, "at least one directory containing SKILL.md");
   let markdown = 0;
+  const readme = resolve(root, "README.md");
+  if (existsSync(readme)) {
+    markdown++;
+    const advertised = new Set(checkMarkdown(readme, root, failAt(readme), "repository"));
+    for (const skill of skills) {
+      if (!advertised.has(resolve(root, skill.name, "SKILL.md"))) {
+        failAt(readme)(skill.name, `README link to ${skill.name}/SKILL.md`);
+      }
+    }
+  }
   for (const skill of skills) {
     const directory = resolve(root, skill.name);
     const path = resolve(directory, "SKILL.md");
     const fail = failAt(path);
+    if (!existsSync(path) || !statSync(path).isFile()) {
+      fail("missing", "existing SKILL.md entrypoint");
+      continue;
+    }
     if (!physicallyInside(directory, path)) {
       fail("SKILL.md", "local resource inside the skill directory");
       continue;
