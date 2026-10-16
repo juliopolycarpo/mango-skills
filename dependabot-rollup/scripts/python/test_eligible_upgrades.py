@@ -679,12 +679,15 @@ class TransportTests(unittest.TestCase):
         def urlopen_ok(url: str, timeout: float) -> FakeResponse:
             return FakeResponse()
 
+        error_body = io.BytesIO(b"Not Found")
+
         def urlopen_404(url: str, timeout: float) -> FakeResponse:
-            raise urllib.error.HTTPError(url, 404, "Not Found", {}, None)  # type: ignore[arg-type]
+            raise urllib.error.HTTPError(url, 404, "Not Found", {}, error_body)  # type: ignore[arg-type]
 
         ok = eu.make_url_fetcher(urlopen_ok)("https://example.test", 1)
         self.assertEqual((ok.status, ok.json()), (200, {"ok": True}))
         self.assertEqual(eu.make_url_fetcher(urlopen_404)("https://example.test", 1).status, 404)
+        self.assertTrue(error_body.closed, "expected the HTTP error response body to be closed")
 
 
 class HelperTests(unittest.TestCase):
