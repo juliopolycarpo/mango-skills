@@ -28,8 +28,10 @@ cannot preserve their original signatures.
 2. Read the base's last merges to copy the repository's layout:
    `git log -5 --format='%h %s%n%b%n---' <fetched-base-ref>`. See
    [message shapes](references/shapes.md).
-3. Draft the message in a unique file (`<branch>-squash.txt`):
-   - Subject: the PR title in the repository's style, including its PR-number convention. For Conventional Commits, carry any `!` from child commits; it does not survive automatically.
+3. Draft the subject separately: the PR title in the repository's style, including its
+   PR-number convention. For Conventional Commits, carry any `!` from child commits; it does
+   not survive automatically. Write only the body and footers in a unique file
+   (`<branch>-squash-body.txt`); `--subject` supplies the subject separately.
    - Body: the final behavior and why, from the final diff, not the commit list. Follow
      repository wrapping conventions and the guidance in
      [squash messages](references/messages.md#squash-messages).
@@ -41,7 +43,7 @@ cannot preserve their original signatures.
    - Inspect the final text for private information using the
      [public text check](references/messages.md#public-text-check).
 4. Merge:
-   `gh pr merge <n> --repo <slug> --squash --subject "<subject>" --body-file <file> --match-head-commit <sha>`.
+   `gh pr merge <n> --repo <slug> --squash --subject "<subject>" --body-file <branch-squash-body-file> --match-head-commit <sha>`.
    Ensure the hosted merge can satisfy required signature, certification and attribution
    policy before executing it; a local hook does not run on GitHub.
 5. Verify using the PR's actual `mergeCommit.oid`, fetched after GitHub reports it merged.
