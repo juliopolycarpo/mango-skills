@@ -16,11 +16,29 @@ git range-diff "$old_feature_base..$old_head" "$new_base..HEAD"
 
 ### Child of a squash-merged parent
 
-1. Read the parent's final head with `gh pr view "$parent_pr" --json headRefOid`. It still
-   works after the parent branch is deleted.
-2. `git diff --stat "$parent_head" "$base_ref"` shows what else landed; an empty result means
-   the squash is the parent's tree and the replay should be clean.
-3. `git rebase --onto "$base_ref" "$parent_head"` replays only the child's commits.
+1. Record the child's old head and remote head before changing it. Obtain the parent's final
+   `headRefOid` with `gh pr view "$parent_pr" --json headRefOid`, even if its branch was
+   deleted. The final parent head describes reviewed parent content; it is not necessarily
+   the boundary from which this child branched.
+2. Recover `old_feature_base`, the exact parent commit already included in the child's old
+   history, from a recorded stack boundary, recovery ref, or reflog. If the child incorporated
+   later parent updates, identify the last incorporated parent boundary. The final parent head
+   is usable only when ancestry and inspection prove it is that boundary. A merge-base with a
+   rewritten parent can omit old parent commits and is insufficient evidence on its own.
+   Inspect `git log --oneline "$old_feature_base..$old_head"` and the corresponding diff;
+   require that they contain only intended child work. If the boundary cannot be established,
+   preserve the child and report the missing evidence before replaying it.
+3. Verify the boundary is an ancestor, then replay from that boundary:
+
+   ```bash
+   git merge-base --is-ancestor "$old_feature_base" "$old_head" &&
+     git rebase --onto "$base_ref" "$old_feature_base"
+   ```
+
+   Stop if the ancestry check fails. Compare the old and new feature ranges with
+   `git range-diff "$old_feature_base..$old_head" "$base_ref..HEAD"`. Inspect changes between
+   the old parent content and the landed parent content, including deliberately removed
+   patches, and verify those removals remain absent. A clean replay is insufficient proof.
 4. Resolve `new_base_branch` from the target repository and task; do not assume `main`.
    Retarget the PR to the new base (`gh pr edit "$pr_number" --repo "$repo_slug" --base "$new_base_branch"`, or
    `gh api -X PATCH repos/$repo_slug/pulls/$pr_number -f base="$new_base_branch"`), then push to the PR's

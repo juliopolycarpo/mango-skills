@@ -54,6 +54,58 @@ test("valid skill, metadata, duplicate heading anchor and SVG pass", () => {
   );
 });
 
+test("metadata identifies a skill whose entrypoint was removed", () => {
+  withFixture({ "removed/agents/openai.yaml": validMetadata }, (root) => {
+    expect(validateSkills(root).errors).toContain(
+      `${join("removed", "SKILL.md")}: expected existing SKILL.md entrypoint; received "missing"`,
+    );
+  });
+});
+
+test("README inventory catches a removed advertised skill directory", () => {
+  withFixture({
+    "README.md": "# Skills\n\n[Example](example/SKILL.md)\n[Missing](missing/SKILL.md)\n",
+  }, (root) => {
+    expect(
+      validateSkills(root).errors.some((message) =>
+        message.includes("missing/SKILL.md") && message.includes("existing local target")
+      ),
+    ).toBe(true);
+  });
+});
+
+test("README inventory requires each discovered skill to be advertised", () => {
+  withFixture({
+    "README.md": "# Skills\n\n[Contribute](CONTRIBUTING.md)\n",
+    "CONTRIBUTING.md": "# Contribute\n",
+  }, (root) => {
+    expect(validateSkills(root).errors).toContain(
+      "README.md: expected README link to example/SKILL.md; received \"example\"",
+    );
+  });
+});
+
+test("README validates repository links and anchors without skill confinement", () => {
+  withFixture({
+    "README.md":
+      "# Skills\n\n[Example](./example/SKILL.md#example)\n[Contribute](docs/contributing.md#contribute)\n[Broken](docs/contributing.md#absent)\n[Outside](../outside.md)\n",
+    "docs/contributing.md": "# Contribute\n",
+  }, (root) => {
+    const errors = validateSkills(root).errors;
+    expect(errors).toHaveLength(2);
+    expect(
+      errors.some((message) =>
+        message.includes("#absent") && message.includes("existing heading anchor")
+      ),
+    ).toBe(true);
+    expect(
+      errors.some((message) =>
+        message.includes("../outside.md") && message.includes("inside the repository")
+      ),
+    ).toBe(true);
+  });
+});
+
 test("frontmatter malformed YAML, missing descriptions and directory mismatch name fail clearly", () => {
   for (
     const [frontmatter, expected] of [
@@ -272,6 +324,24 @@ function canCreateFileSymlink() {
   }
 }
 const fileSymlinksAvailable = canCreateFileSymlink();
+
+test.skipIf(!fileSymlinksAvailable)(
+  "README links cannot escape the repository through symlinks",
+  () => {
+    const outside = mkdtempSync(join(tmpdir(), "fix-published-skill-review-readme-"));
+    try {
+      writeFileSync(join(outside, "guide.md"), "# Guide\n");
+      withFixture({ "README.md": "[Example](example/SKILL.md)\n[Guide](guide.md)\n" }, (root) => {
+        symlinkSync(join(outside, "guide.md"), join(root, "guide.md"), "file");
+        expect(validateSkills(root).errors).toContain(
+          "README.md: expected local target inside the repository; received \"guide.md\"",
+        );
+      });
+    } finally {
+      rmSync(outside, { recursive: true, force: true });
+    }
+  },
+);
 
 test.skipIf(!fileSymlinksAvailable)(
   "local Markdown symlinks cannot resolve into sibling skills",

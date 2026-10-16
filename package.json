@@ -6,6 +6,7 @@
     "validate": "bun scripts/validate-skills.mjs",
     "smoke": "bun scripts/smoke-helpers.mjs",
     "test": "bun test",
+    "test:node": "node --test dependabot-rollup/scripts/javascript/eligible-upgrades.test.mjs merge-pr/scripts/javascript/verify-qualified-head.test.mjs squash-pr/scripts/javascript/verify-squash.test.mjs",
     "test:python": "bun scripts/test-python.mjs",
     "format": "dprint fmt",
     "format:check": "dprint check",

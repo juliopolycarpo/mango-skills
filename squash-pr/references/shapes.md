@@ -13,7 +13,8 @@ Use the established subject style, paragraph layout, issue reference syntax and 
 policy. A separator before trailers is optional and belongs only where the repository uses
 one. If there is no established style, write a short subject and a body explaining the final
 behavior and reason. For Conventional Commits, preserve compatibility markers and migration
-footers.
+footers. These examples show the assembled commit message. For `gh pr merge`, pass the
+first line through `--subject` and put only the body and footers in the `--body-file` file.
 
 ```text
 fix(runtime): await connection teardown during shutdown (#42)

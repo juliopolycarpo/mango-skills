@@ -51,14 +51,18 @@ Changed declarations include direct exact action tags and SHA pins with exact ve
 comments. SHA version evidence requires one declaration occurrence and one unambiguous
 source line containing only that `uses` value; repeated declarations or ambiguous source
 text remain unknown for manual review. For SHA pins with usable comments, the helper verifies
-that the comment's tag resolves to the pinned commit. Actions candidates stay on that assessed
+that the comment's exact tag resolves to the pinned commit. Current release evidence must match
+the exact assessed Git tag, including its `v` prefix; `1.0.0` and `v1.0.0` are distinct refs.
+Actions candidates stay on that assessed
 major. Major-only tags, local actions,
 container actions, and other unsupported forms appear in coverage instead of disappearing.
 Discovery reads `uses:` values without a YAML parser: block-style and explicit `? uses` keys,
 quoted and plain values, `&anchor` and `!tag` prefixes, and single-line or multi-line `{...}`
 flow mappings. A `uses` value it cannot read (an `*alias`, block scalar, flow collection,
 unclosed quote, or bare anchor or tag) is listed as an unsupported declaration with its raw
-text, so the run exits 2 and you review it by hand. Multi-line plain scalars are not detected.
+text, so the run exits 2 and you review it by hand. A blank inline `uses:` value retains its
+indented continuation as unsupported `uses:` text, including when that continuation changes
+between revisions. Multi-line plain scalars are not resolved.
 Changed Cargo, Docker, Python, and Go manifests are listed as uncovered; this is a changed-file
 sweep, not a complete installed-dependency or transitive audit. Check platform subpackages and
 other ecosystem formats separately.

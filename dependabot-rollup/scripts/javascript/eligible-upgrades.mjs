@@ -193,7 +193,8 @@ function yamlFlow(text, found) {
  * their text is never read as a key). A `uses` value that cannot be read (alias `*x`, block
  * scalar, flow collection, unclosed quote, bare anchor/tag, reserved indicator) is returned as
  * its raw text so it surfaces as an unsupported declaration instead of disappearing.
- * Not supported: multi-line plain scalars, alias resolution, YAML syntax validation.
+ * Empty inline values retain their indented continuation as unsupported `uses:` text.
+ * Not supported: resolving multi-line plain scalars, aliases, or validating YAML syntax.
  * Example: extractUses('steps:\n  - uses: actions/checkout@v4 # pin').
  */
 export function extractUses(source) {
@@ -202,7 +203,8 @@ export function extractUses(source) {
   let quote = null;
   let flow = null;
   let explicit = false;
-  for (const raw of source.split("\n")) {
+  const lines = source.split("\n");
+  for (const [index, raw] of lines.entries()) {
     const line = raw.replace(/\r+$/, "");
     if (quote !== null) {
       if (yamlClose(line, quote) >= 0) quote = null;
@@ -237,6 +239,19 @@ export function extractUses(source) {
       || (match !== null && ["uses", "\"uses\"", "'uses'"].includes(match[1]));
     const valueText = (explicitValue ? explicitValue[1] : match ? match[2] : rest) ?? "";
     const value = yamlValue(valueText);
+    if (isUses && (!valueText.trim() || valueText.trim().startsWith("#"))) {
+      const continuation = [];
+      for (const next of lines.slice(index + 1)) {
+        if (
+          next.trim() && !next.trimStart().startsWith("#")
+          && next.length - next.trimStart().length <= column
+        ) break;
+        continuation.push(next.replace(/\r+$/, ""));
+      }
+      found.push(["uses:", ...continuation].join("\n").trimEnd());
+      blockParent = column;
+      continue;
+    }
     if (isUses) yamlEmit(value, valueText, found);
     if (value.type === "block") {
       const dash = prefix.lastIndexOf("-");
@@ -608,7 +623,7 @@ export async function assess(row, evidence, cutoff) {
     const current = releases.find(
       (release) =>
         stable.test(release.tag_name ?? "")
-        && compare(release.tag_name, row.current) === 0,
+        && release.tag_name === row.current,
     );
     result.current_evidence = releaseCheck(
       current,

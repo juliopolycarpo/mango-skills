@@ -414,6 +414,17 @@ class AssessNpmTests(unittest.TestCase):
 
 
 class AssessActionTests(unittest.TestCase):
+    def test_current_evidence_requires_exact_tag_including_v_prefix(self) -> None:
+        for current, other_tag in [("4.0.0", "v4.0.0"), ("v4.0.0", "4.0.0")]:
+            with self.subTest(current=current):
+                evidence = FakeEvidence(responses={listing(1): {
+                    "status": "ok", "data": [release("4.0.0", tag_name=other_tag)]
+                }})
+                result = eu.assess(action_row(current), evidence, CUTOFF)
+                self.assertEqual(result["current_evidence"]["status"], "unknown")
+                self.assertEqual(result["completeness"], "unknown")
+
+
     def test_paginates_beyond_first_100_releases_and_respects_pinned_major(self) -> None:
         page1 = [release("9.0.0") for _ in range(100)]
         evidence = FakeEvidence(
@@ -668,12 +679,15 @@ class TransportTests(unittest.TestCase):
         def urlopen_ok(url: str, timeout: float) -> FakeResponse:
             return FakeResponse()
 
+        error_body = io.BytesIO(b"Not Found")
+
         def urlopen_404(url: str, timeout: float) -> FakeResponse:
-            raise urllib.error.HTTPError(url, 404, "Not Found", {}, None)  # type: ignore[arg-type]
+            raise urllib.error.HTTPError(url, 404, "Not Found", {}, error_body)  # type: ignore[arg-type]
 
         ok = eu.make_url_fetcher(urlopen_ok)("https://example.test", 1)
         self.assertEqual((ok.status, ok.json()), (200, {"ok": True}))
         self.assertEqual(eu.make_url_fetcher(urlopen_404)("https://example.test", 1).status, 404)
+        self.assertTrue(error_body.closed, "expected the HTTP error response body to be closed")
 
 
 class HelperTests(unittest.TestCase):
@@ -725,6 +739,7 @@ class HelperTests(unittest.TestCase):
                 "./local",
                 "docker://image:1",
                 "${{ matrix.action }}",
+                "uses:",
                 "owner/nested@v6",
             ],
         )
@@ -734,7 +749,7 @@ class HelperTests(unittest.TestCase):
     def test_extract_uses_handles_escapes_and_non_string_scalars(self) -> None:
         self.assertEqual(eu.extract_uses('uses: "a\\"b"'), ['a"b'])
         self.assertEqual(eu.extract_uses("uses: 'it''s'"), ["it's"])
-        self.assertEqual(eu.extract_uses("uses: true\nuses: 12\nuses: null\nuses: # none"), [])
+        self.assertEqual(eu.extract_uses("uses: true\nuses: 12\nuses: null\nuses: # none"), ["uses:"])
         self.assertEqual(eu.extract_uses('"uses": x/y@v1'), ["x/y@v1"])
 
     def test_extract_uses_resolves_anchors_and_tags_and_surfaces_unreadable_values_raw(self) -> None:
@@ -853,6 +868,24 @@ class HelperTests(unittest.TestCase):
 
 
 class CliTests(unittest.TestCase):
+    def test_changed_non_inline_uses_exits_2_without_network(self) -> None:
+        fixture = GitFixture(self)
+        before = "steps:\n  - uses:\n      owner/action@v1.0.0\n"
+        fixture.write(".github/workflows/ci.yml", before)
+        base = fixture.commit("base")
+        fixture.write(".github/workflows/ci.yml", before.replace("v1.0.0", "v2.0.0"))
+        head = fixture.commit("changed action")
+        lines: List[str] = []
+        evidence = FakeEvidence()
+        code = eu.main(["--base", base, "--head", head, "--json"],
+                       evidence=evidence, run_git=fixture.runner(), out=lines.append)
+        report = json.loads("\n".join(lines))
+        self.assertEqual(code, 2, "expected unsupported non-inline uses to exit 2")
+        self.assertEqual(len(report["rows"]), 1)
+        self.assertEqual(report["rows"][0]["coverage"], "unsupported")
+        self.assertEqual(report["rows"][0]["declaration"], "uses:\n      owner/action@v2.0.0")
+        self.assertEqual(evidence.requests, [])
+
     def test_rejects_invalid_flags_and_age_before_accessing_repository_or_network(self) -> None:
         with self.assertRaisesRegex(ValueError, r"\(--min-days\): expected finite nonnegative number \| received: -1"):
             eu.main(["--min-days", "-1"], run_git=ForbiddenGit())
@@ -973,6 +1006,7 @@ class JavaScriptParityTests(unittest.TestCase):
     """Cross-check helpers and the offline CLI against the JavaScript implementation."""
 
     YAML_SAMPLES = [
+        "steps:\n  - uses:\n# comment\n      owner/action@v1.0.0\n",
         "jobs:\n  a:\n    steps:\n      - uses: actions/checkout@v4 # pin\n      - uses: \"q/d@v1\"\n",
         "steps:\n  - run: |\n      uses: no/pe@v1\n  - uses: 'q/s@v2'\n  - { uses: f/l@v3, name: x }\n",
         "uses: ./local\nwith:\n  uses: n/ested@v1\nx: ${{ y }}\nuses: true\nuses: # nothing\n",
