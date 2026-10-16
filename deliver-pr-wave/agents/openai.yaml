@@ -1,0 +1,7 @@
+interface:
+  display_name: "Deliver a PR wave"
+  short_description: "Ship a PR or deliver dependent and parallel PRs"
+  icon_small: "./assets/icon.svg"
+  icon_large: "./assets/icon.svg"
+  brand_color: "#4338CA"
+  default_prompt: "Use $deliver-pr-wave to commit by concern, push, update the PR body, open follow-up issues, and land the requested pull requests at their intended targets."

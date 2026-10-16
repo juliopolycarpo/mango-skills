@@ -1,0 +1,7 @@
+interface:
+  display_name: "Merge a PR"
+  short_description: "Land umbrella branches as signed true merge commits"
+  icon_small: "./assets/icon.svg"
+  icon_large: "./assets/icon.svg"
+  brand_color: "#B45309"
+  default_prompt: "Use $merge-pr to land this umbrella branch as a locally signed true merge commit that keeps every commit's SHA, signature and sign-off."

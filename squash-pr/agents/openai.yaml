@@ -1,0 +1,7 @@
+interface:
+  display_name: "Squash a PR"
+  short_description: "Squash feature PRs with curated messages and attribution"
+  icon_small: "./assets/icon.svg"
+  icon_large: "./assets/icon.svg"
+  brand_color: "#0F766E"
+  default_prompt: "Use $squash-pr to squash this feature PR with a curated message, repository-required certification and legitimate contributor attribution, and verify its actual integration commit."

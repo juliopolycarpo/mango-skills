@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" fill="none" role="img" aria-labelledby="title">
+  <title id="title">Babysit a PR: branch with passing checks</title>
+  <rect x="2" y="2" width="60" height="60" rx="16" fill="#047857"/>
+  <g stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M20 24v16m11-20h4a9 9 0 0 1 9 9v3m-9-16-4 4 4 4"/>
+    <circle cx="20" cy="19" r="5"/>
+    <circle cx="20" cy="45" r="5"/>
+  </g>
+  <path d="m35 43 6 6 11-13" stroke="#A7F3D0" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

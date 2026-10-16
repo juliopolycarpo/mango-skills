@@ -1,0 +1,7 @@
+interface:
+  display_name: "Prove a regression"
+  short_description: "Prove fixes with tests that fail first, then pass"
+  icon_small: "./assets/icon.svg"
+  icon_large: "./assets/icon.svg"
+  brand_color: "#BE123C"
+  default_prompt: "Use $prove-regression to reproduce this defect, prove the test fails for the expected reason, and verify the fix passes."

@@ -1,0 +1,7 @@
+interface:
+  display_name: "Qualify performance"
+  short_description: "Measure speed, memory, build size, and CI cost"
+  icon_small: "./assets/icon.svg"
+  icon_large: "./assets/icon.svg"
+  brand_color: "#B45309"
+  default_prompt: "Use $qualify-performance to compare the baseline and candidate under controlled conditions and report the measured tradeoffs."

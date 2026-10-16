@@ -1,0 +1,11 @@
+node_modules/
+__pycache__/
+*.py[cod]
+.playwright-cli/
+playwright-report/
+test-results/
+coverage/
+.DS_Store
+.env
+.env.*
+!.env.example

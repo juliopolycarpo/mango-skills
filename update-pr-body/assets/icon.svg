@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" fill="none" role="img" aria-labelledby="title">
+  <title id="title">Update PR metadata: edit the pull request description</title>
+  <rect x="2" y="2" width="60" height="60" rx="16" fill="#1D4ED8"/>
+  <g stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M28 50H19a4 4 0 0 1-4-4V18a4 4 0 0 1 4-4h20a4 4 0 0 1 4 4v8"/>
+    <path d="M23 23h12m-12 9h9m-9 9h3"/>
+    <path d="m34 42 13-13 6 6-13 13-8 2 2-8Zm10-10 6 6" stroke="#BFDBFE"/>
+  </g>
+</svg>

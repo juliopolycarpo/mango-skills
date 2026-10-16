@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" fill="none" role="img" aria-labelledby="title">
+  <title id="title">Prove a regression: a reproduced bug and passing test</title>
+  <rect x="2" y="2" width="60" height="60" rx="16" fill="#BE123C"/>
+  <g stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M23 24v-3a5 5 0 0 1 10 0v3m-12 4-5-5m4 13h-6m7 8-5 5m20-21 5-5m-13 4v15"/>
+    <rect x="20" y="24" width="16" height="24" rx="8"/>
+  </g>
+  <path d="m39 42 5 5 9-12" stroke="#FECDD3" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

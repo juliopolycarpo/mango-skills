@@ -1,0 +1,99 @@
+# Coordinate delegated work
+
+Use this reference when splitting a wave across agents or preparing several worktrees.
+
+## Assignment brief
+
+Use Explorer for mapping, Builder for implementation, and Reviewer for defect review. Give each:
+
+- Goal, acceptance criteria, owned files or module, excluded work, and integration owner.
+- Repository, dedicated worktree, branch, exact base SHA, and expected PR target.
+- Required validation, allowed Git/GitHub actions, and expected report of commits, files,
+  results, and blockers. Builders do not commit, push, open PRs, or spawn agents unless the
+  brief authorizes it.
+- A unique scratch directory named after the branch for logs, commit-message files, PR bodies,
+  GraphQL queries, and evidence (see [Scratch paths](#scratch-paths)).
+- Tell any agent that touches the home directory never to print the user's config files that
+  hold credentials.
+
+Tell writers they share the project with others and must accommodate their edits without
+reverting them. Prefer a Builder's own worktree. Keep shared files with one coordinator.
+Before a Builder finishes, have it check `git log <verified-fetched-base-ref>..HEAD` and the PR body with
+`gh pr view --json body` so a PR never carries another unit's text.
+
+## Worktrees and resources
+
+Use one worktree per review, debug, or feature. Retain it until its work is recoverable and
+cleanup is within the task's scope. Push the branch when publication is authorized; otherwise
+report committed but unpushed work and preserve its checkout.
+
+Confirm cwd, branch, HEAD, and graph against the expected base before editing. Creation tools
+can fork from the default branch instead of the feature branch you are on. Open a Builder brief
+with `git merge --ff-only <feature-branch>` and stop if it is refused, then cherry-pick results
+back yourself. Inspect intended descendant commits in an existing checkout instead of resetting
+them. Advance a clean checkout with `--ff-only` only when the graph allows it. Correct an
+isolated setup error before coding; do not merge an unrelated base.
+
+Run the project's frozen install (for Bun repositories `bun install --frozen-lockfile`) in a
+fresh worktree before calling a check failure pre-existing; a partial `node_modules` is common.
+
+Stop every dev server, watcher, and runner you start. A leftover process holds the port and
+singleton lock for the next worktree.
+
+Before removing a task-created worktree, inspect its status, untracked files, and commits
+beyond the merged PR head. Preserve dirty files and unpublished follow-up commits. Confirm
+that retained remote refs or another intentional recovery copy contain all work; a merged PR
+alone does not prove later work is saved. Respect an existing lock unless this task owns it.
+Use ordinary `git worktree remove <path>`, then `git branch -d <branch>` only when its deletion
+is in scope and Git accepts it. A refusal is a reason to inspect and retain the work, not to
+add force flags. For a squash-merged branch that Git cannot recognize as merged, leave it
+unless the task authorizes deletion after verifying its reviewed content is recoverable.
+
+### Disk and build budgets
+
+Set disk, build, and CI concurrency budgets from current free space, filesystem, and runner
+limits. Historical `/tmp` or workflow-token failures are reasons to inspect, not permanent
+assumptions. Rust worktrees can grow `target/` by tens of GB. Delete `target/` after pushing,
+and avoid concurrent Cargo builds sharing a writable target directory. Share a target
+directory only between sequential jobs when repository tooling permits it. Reclaim disposable
+build output within scope while preserving unpushed work and evidence. Build under the
+worktree's own `target/`, not a RAM-backed temp directory.
+
+### Recover an orphaned worktree
+
+If a crash or disk-full event leaves a worktree without Git metadata, build a temporary index
+instead of touching the main one: set `GIT_INDEX_FILE` to a scratch path, `git read-tree <base>`,
+`git add -A`, then diff against the base to recover the work.
+
+## Scratch paths
+
+Concurrent agents share one scratchpad. Generic names such as `pr-body.md`, `commit1.txt`, or
+`threads.graphql` get overwritten, and one PR has been published with another's body. Give
+each agent a subdirectory or filename prefix named after its branch for every temp,
+commit-message, GraphQL, and PR-body file, and verify what you publish before sending it.
+
+## Polling and CI pacing
+
+Use one coordinator to poll the wave and pace CI submissions. Each unit needs its own current
+head, review result, and check evidence after an upstream target changes.
+
+- Builders poll every 90 seconds or slower, through REST check runs. Use GraphQL only for
+  review threads. Ten agents polling `gh pr checks` exhausted the GraphQL rate limit.
+- Use the local [readiness guide](delivery.md#bring-the-current-head-to-readiness) for check
+  identity, pagination, review threads, and polling failure handling.
+- Hosted-runner concurrency is shared. Many PRs times several workflows plus a large matrix can
+  stall CI for hours, so avoid needless pushes and keep smoke workflows small.
+- Capture raw background output to a file and tail the file. Do not match a poll loop on text
+  that the output also quotes, and do not use `pgrep -f` or `pkill -f` patterns that match
+  your own command line.
+
+## Common destinations
+
+- Independent PRs left ready: finish requested reviews and CI for each without merging.
+- Child changes integrated into an umbrella: serialize integration, validate the resulting
+  umbrella, and preserve the owner's final rebase, squash, push, or landing steps.
+- Approved wave landed: verify readiness afresh and land each unit in dependency order with
+  the [landing guide](landing.md).
+
+A missing authorization affects only its dependent action. Complete authorized preparation
+first and do not request approval again for actions already covered by the user's instructions.

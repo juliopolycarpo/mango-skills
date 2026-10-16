@@ -1,0 +1,18 @@
+name: Skill improvement
+description: Suggest a portable workflow, clearer instruction, or new regression case.
+title: "enhancement: "
+body:
+  - type: textarea
+    id: use-case
+    attributes:
+      label: Use case
+      description: Describe the task, current workaround, and who would benefit.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed behavior
+      description: Give an example input and the result the skill should produce. Explain tool or platform requirements.
+    validations:
+      required: true

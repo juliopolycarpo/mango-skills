@@ -1,0 +1,7 @@
+interface:
+  display_name: "Conventional commits"
+  short_description: "Draft clear Conventional Commits and PR titles"
+  icon_small: "./assets/icon.svg"
+  icon_large: "./assets/icon.svg"
+  brand_color: "#C2410C"
+  default_prompt: "Use $conventional-commits to draft a commit message with a clear subject and a body explaining this change."

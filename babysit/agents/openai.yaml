@@ -1,0 +1,7 @@
+interface:
+  display_name: "Babysit a PR"
+  short_description: "Fix PR feedback and watch CI through merge readiness"
+  icon_small: "./assets/icon.svg"
+  icon_large: "./assets/icon.svg"
+  brand_color: "#047857"
+  default_prompt: "Use $babysit to fix actionable feedback, watch CI, and verify this pull request is ready to merge."

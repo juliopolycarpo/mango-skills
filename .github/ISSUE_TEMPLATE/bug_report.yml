@@ -1,0 +1,31 @@
+name: Skill bug
+description: Report an instruction or helper that produces the wrong result.
+title: "bug: "
+body:
+  - type: input
+    id: skill
+    attributes:
+      label: Skill
+      description: Name the affected skill and repository revision.
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Include the agent, operating system, and relevant tool versions.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction
+      description: Give a minimal task or fixture, the steps taken, and exact error output. Remove secrets and private repository content.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected and actual behavior
+    validations:
+      required: true

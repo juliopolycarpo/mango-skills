@@ -1,0 +1,7 @@
+interface:
+  display_name: "Rebase a PR"
+  short_description: "Rebase, review, and refresh PRs after upstream changes"
+  icon_small: "./assets/icon.svg"
+  icon_large: "./assets/icon.svg"
+  brand_color: "#6D28D9"
+  default_prompt: "Use $rebase-pr to rebase this pull request onto its intended current base, review the upstream interactions, apply in-scope follow-ups, and refresh the PR."

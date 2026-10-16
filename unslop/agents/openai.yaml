@@ -1,0 +1,7 @@
+interface:
+  display_name: "Unslop"
+  short_description: "Make prose direct, specific, and checkable"
+  icon_small: "./assets/icon.svg"
+  icon_large: "./assets/icon.svg"
+  brand_color: "#0E7490"
+  default_prompt: "Use $unslop to edit this commit, PR, review reply, issue, doc, or agent instruction for direct, specific wording while preserving its facts and format."
