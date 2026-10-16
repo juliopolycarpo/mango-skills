@@ -14,6 +14,13 @@ function main() {
     .filter((entry) => entry.isDirectory())
     .map((entry) => join(tests, entry.name, "python"))
     .filter((directory) => existsSync(directory));
+  if (!suites.length) {
+    console.error(
+      "(tests/*/python): expected at least one Python suite directory | received: none",
+    );
+    process.exitCode = 1;
+    return;
+  }
   let failed = 0;
   for (const suite of suites) {
     const result = spawnSync(python, ["-I", "-m", "unittest", "discover", "-s", suite], {
