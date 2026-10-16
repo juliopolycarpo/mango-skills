@@ -18,12 +18,13 @@ import urllib.parse
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Sequence
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
+SCRIPTS = Path(__file__).resolve().parents[3] / "dependabot-rollup" / "scripts"
+sys.path.insert(0, str(SCRIPTS / "python"))
 
 import eligible_upgrades as eu  # noqa: E402
 
-HERE = Path(__file__).resolve().parent
-JS_MODULE = HERE.parent / "javascript" / "eligible-upgrades.mjs"
+SCRIPT = Path(eu.__file__).resolve()
+JS_MODULE = SCRIPTS / "javascript" / "eligible-upgrades.mjs"
 _PARSED_CUTOFF = eu.parse_timestamp("2026-10-12T00:00:00Z")
 assert _PARSED_CUTOFF is not None, "(test setup): expected parsable cutoff | received: None"
 CUTOFF: int = _PARSED_CUTOFF
@@ -989,7 +990,7 @@ class CliTests(unittest.TestCase):
 
     def test_script_entrypoint_exits_1_for_invalid_option(self) -> None:
         completed = subprocess.run(
-            [sys.executable, "-I", str(HERE / "eligible_upgrades.py"), "--invalid-option"],
+            [sys.executable, "-I", str(SCRIPT), "--invalid-option"],
             capture_output=True, universal_newlines=True, check=False,
         )
         self.assertEqual(completed.returncode, 1, completed.stderr)
@@ -1061,7 +1062,7 @@ class JavaScriptParityTests(unittest.TestCase):
             capture_output=True, universal_newlines=True, check=False,
         )
         py = subprocess.run(
-            [sys.executable, "-I", str(HERE / "eligible_upgrades.py"), *argv], cwd=str(fixture.repo),
+            [sys.executable, "-I", str(SCRIPT), *argv], cwd=str(fixture.repo),
             env=fixture.env, capture_output=True, universal_newlines=True, check=False,
         )
         self.assertEqual((js.returncode, py.returncode), (2, 2), (js.stderr, py.stderr))

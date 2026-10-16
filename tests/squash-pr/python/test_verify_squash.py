@@ -14,7 +14,9 @@ import unittest
 from pathlib import Path
 from unittest import mock
 
-import verify_squash as vs
+sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "squash-pr" / "scripts" / "python"))
+
+import verify_squash as vs  # noqa: E402
 
 SCRIPT = Path(vs.__file__).resolve()
 

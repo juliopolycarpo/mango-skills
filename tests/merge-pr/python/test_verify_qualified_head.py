@@ -14,7 +14,9 @@ import unittest
 from pathlib import Path
 from unittest import mock
 
-import verify_qualified_head as vq
+sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "merge-pr" / "scripts" / "python"))
+
+import verify_qualified_head as vq  # noqa: E402
 
 SCRIPT = Path(vq.__file__).resolve()
 

@@ -5,7 +5,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { after, test } from "node:test";
 import { fileURLToPath } from "node:url";
-import { verifyQualifiedHead } from "./verify-qualified-head.mjs";
+import { verifyQualifiedHead } from "../../../merge-pr/scripts/javascript/verify-qualified-head.mjs";
 
 const roots = [];
 function fixture() {
@@ -77,7 +77,7 @@ test("rejects stale base receipts and unintegrated base", () => {
 
 test("runs its CLI through a symlinked skill path", () => {
   const scripts = [
-    new URL("./verify-qualified-head.mjs", import.meta.url),
+    new URL("../../../merge-pr/scripts/javascript/verify-qualified-head.mjs", import.meta.url),
   ];
   for (const script of scripts) {
     const dir = mkdtempSync(join(tmpdir(), "skills-fix-link-"));

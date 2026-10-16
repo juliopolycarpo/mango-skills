@@ -5,7 +5,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { after, test } from "node:test";
 import { fileURLToPath } from "node:url";
-import { verifySquash } from "./verify-squash.mjs";
+import { verifySquash } from "../../../squash-pr/scripts/javascript/verify-squash.mjs";
 
 const roots = [];
 function fixture() {
@@ -62,7 +62,7 @@ test("rejects a squash missing reviewed content", () => {
 
 test("runs its CLI through a symlinked skill path", () => {
   const scripts = [
-    new URL("./verify-squash.mjs", import.meta.url),
+    new URL("../../../squash-pr/scripts/javascript/verify-squash.mjs", import.meta.url),
   ];
   for (const script of scripts) {
     const dir = mkdtempSync(join(tmpdir(), "skills-fix-link-"));

@@ -6,7 +6,7 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 /** Exercise helper CLI entrypoints against synthetic Git history without external requests.
- * Example: bun scripts/smoke-helpers.mjs /path/to/new-artifacts
+ * Example: bun tests/smoke-helpers.mjs /path/to/new-artifacts
  */
 function main() {
   assert(process.argv.length <= 3, "expected at most one artifact directory argument");

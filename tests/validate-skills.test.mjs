@@ -4,7 +4,7 @@ import { mkdirSync, mkdtempSync, rmSync, symlinkSync, writeFileSync } from "node
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { main, validateSkills } from "./validate-skills.mjs";
+import { main, validateSkills } from "../scripts/validate-skills.mjs";
 
 const validSkill =
   "---\nname: example\ndescription: Use when testing structural skill validation.\n---\n# Example\n\n[Details](references/details.md#repeated-heading-1)\n\n[Same page](#example)\n";
@@ -271,7 +271,7 @@ test("valid width and height SVG dimensions work without viewBox", () => {
 });
 
 test("CLI produces JSON and meaningful exit status; invalid arguments fail", () => {
-  const script = fileURLToPath(new URL("./validate-skills.mjs", import.meta.url));
+  const script = fileURLToPath(new URL("../scripts/validate-skills.mjs", import.meta.url));
   withFixture({}, (root) => {
     const result = spawnSync(process.execPath, [script, root, "--json"], { encoding: "utf8" });
     expect(result.status).toBe(0);

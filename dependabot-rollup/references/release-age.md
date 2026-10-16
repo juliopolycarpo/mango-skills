@@ -97,10 +97,3 @@ about unchanged dependencies.
 Record publish times, eligible candidates, too-new versions, missing evidence, and any accepted
 exception. Use the repository's one-invocation override for an explicitly accepted young
 version, preserving persistent policy and the scope of existing exceptions.
-
-Run deterministic no-network checks with:
-
-```bash
-bun test "$skill_dir/scripts/javascript/eligible-upgrades.test.mjs"
-python3 -m unittest discover -s "$skill_dir/scripts/python"
-```

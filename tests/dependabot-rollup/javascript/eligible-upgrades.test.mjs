@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { execFileSync, spawnSync } from "node:child_process";
 import { mkdirSync, mkdtempSync, realpathSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { dirname, join } from "node:path";
+import { join } from "node:path";
 import { test } from "node:test";
 import { fileURLToPath } from "node:url";
 import {
@@ -14,7 +14,11 @@ import {
   extractUses,
   main,
   satisfiesRange,
-} from "./eligible-upgrades.mjs";
+} from "../../../dependabot-rollup/scripts/javascript/eligible-upgrades.mjs";
+
+const SCRIPT = fileURLToPath(
+  new URL("../../../dependabot-rollup/scripts/javascript/eligible-upgrades.mjs", import.meta.url),
+);
 
 /** Assert every expected field of `actual` deep-equals its expectation (shallow partial match). */
 function assertMatches(actual, expected) {
@@ -519,7 +523,7 @@ test("CLI reports changed non-inline uses as unsupported with exit 2", () => {
     git("add", ".");
     commitFixture(git, "changed action");
     const result = spawnSync(process.execPath, [
-      fileURLToPath(new URL("./eligible-upgrades.mjs", import.meta.url)),
+      SCRIPT,
       "--base",
       base,
       "--json",
@@ -928,7 +932,7 @@ test("empty registry versions object is present but lacks the current version", 
 test("entrypoint guard runs the CLI when invoked through a symlink", (t) => {
   const dir = mkdtempSync(join(tmpdir(), "skills-dependency-symlink-"));
   try {
-    const target = join(dirname(fileURLToPath(import.meta.url)), "eligible-upgrades.mjs");
+    const target = SCRIPT;
     const link = join(dir, "linked-upgrades.mjs");
     try {
       symlinkSync(realpathSync(target), link);
