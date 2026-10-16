@@ -420,7 +420,8 @@ def extract_uses(source: str) -> List[str]:
     their text is never read as a key). A `uses` value that cannot be read (alias `*x`, block
     scalar, flow collection, unclosed quote, bare anchor/tag, reserved indicator) is returned as
     its raw text so it surfaces as an unsupported declaration instead of disappearing.
-    Not supported: multi-line plain scalars, alias resolution, YAML syntax validation.
+    Empty inline values retain their indented continuation as unsupported `uses:` text.
+    Not supported: resolving multi-line plain scalars, aliases, or validating YAML syntax.
     Example: extract_uses("steps:\\n  - uses: actions/checkout@v4 # pin") -> ["actions/checkout@v4"].
     """
     found: List[str] = []
@@ -428,7 +429,8 @@ def extract_uses(source: str) -> List[str]:
     quote: Optional[str] = None
     flow: Optional[Tuple[int, Optional[str], str]] = None
     explicit = False
-    for raw in source.split("\n"):
+    lines = source.split("\n")
+    for index, raw in enumerate(lines):
         line = raw.rstrip("\r")
         if quote is not None:
             if _yaml_close(line, quote) >= 0:
@@ -468,6 +470,16 @@ def extract_uses(source: str) -> List[str]:
         else:
             value_text = rest
         value = _yaml_value(value_text)
+        if is_uses and (not value_text.strip() or value_text.strip().startswith("#")):
+            continuation = []
+            for following in lines[index + 1:]:
+                if (following.strip() and not following.lstrip().startswith("#")
+                        and len(following) - len(following.lstrip()) <= column):
+                    break
+                continuation.append(following.rstrip("\r"))
+            found.append("\n".join(["uses:"] + continuation).rstrip())
+            block_parent = column
+            continue
         if is_uses:
             _yaml_emit(value, value_text, found)
         if value["type"] == "block":
@@ -965,7 +977,7 @@ def _assess_actions(result: Result, row: Row, evidence: Any, cutoff: float) -> b
             )
             return False
     current = next(
-        (r for r in releases if _stable_tag(r) and compare(r["tag_name"], row["current"]) == 0), None
+        (r for r in releases if _stable_tag(r) and r["tag_name"] == row["current"]), None
     )
     result["current_evidence"] = _release_check(
         current, current.get("published_at") if current else None, cutoff

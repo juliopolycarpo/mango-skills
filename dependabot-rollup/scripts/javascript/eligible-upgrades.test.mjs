@@ -155,6 +155,21 @@ test("YAML action discovery includes SHA version comments and unsupported major/
   assert.deepEqual(discoverActions("ci.yml", yaml, yaml), []);
 });
 
+test("empty uses retains changed continuation text as unsupported evidence", async () => {
+  const before = "steps:\n  - uses:\n      owner/action@v1.0.0\n";
+  const after = before.replace("v1.0.0", "v2.0.0");
+  const rows = discoverActions("ci.yml", before, after);
+  assert.equal(rows.length, 1, "expected one unsupported changed multiline uses declaration");
+  assert.equal(rows[0].declaration, "uses:\n      owner/action@v2.0.0");
+  assert.equal(rows[0].coverage, "unsupported");
+  const evidence = fakeEvidence();
+  assert.equal((await assess(rows[0], evidence, cutoff)).completeness, "unknown");
+  assert.deepEqual(evidence.requests, []);
+  assert.deepEqual(extractUses("uses: # next line\n  owner/action@v1.0.0"), [
+    "uses:\n  owner/action@v1.0.0",
+  ]);
+});
+
 test("action discovery retains added occurrences after reordered existing pins", () => {
   const before = "steps:\n  - uses: owner/action@v1.0.0\n  - uses: owner/action@v2.0.0\n";
   const after =
@@ -328,6 +343,24 @@ test("paginates beyond first 100 releases to current; respects pinned action maj
   assert.equal(result.current_evidence.status, "eligible");
 });
 
+test("action current evidence matches the exact tag, including its v prefix", async () => {
+  for (const current of ["4.0.0", "v4.0.0"]) {
+    const otherTag = current.startsWith("v") ? "4.0.0" : "v4.0.0";
+    const evidence = fakeEvidence({
+      responses: {
+        [listing(1)]: { status: "ok", data: [release("4.0.0", { tag_name: otherTag })] },
+      },
+    });
+    const result = await assess(actionRow(current), evidence, cutoff);
+    assert.equal(
+      result.current_evidence.status,
+      "unknown",
+      `expected unknown evidence for ${current} from ${otherTag}`,
+    );
+    assert.equal(result.completeness, "unknown");
+  }
+});
+
 test("failed pagination or missing current release never passes current age policy", async () => {
   const incomplete = await assess(
     actionRow(),
@@ -459,6 +492,52 @@ test("structural inventory reads merge-base manifests and added files in isolate
     ]);
   } finally {
     process.chdir(previous);
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("CLI reports changed non-inline uses as unsupported with exit 2", () => {
+  const dir = mkdtempSync(join(tmpdir(), "fix-published-skill-review-action-"));
+  const env = {
+    ...process.env,
+    GIT_CONFIG_NOSYSTEM: "1",
+    GIT_CONFIG_GLOBAL: join(dir, "fixture.gitconfig"),
+  };
+  const git = (...args) => execFileSync("git", args, { cwd: dir, env, encoding: "utf8" }).trim();
+  try {
+    writeFileSync(env.GIT_CONFIG_GLOBAL, "");
+    git("init", "-q");
+    git("config", "user.name", "Fixture");
+    git("config", "user.email", "fixture@example.test");
+    mkdirSync(join(dir, ".github/workflows"), { recursive: true });
+    const workflow = join(dir, ".github/workflows/ci.yml");
+    const before = "steps:\n  - uses:\n      owner/action@v1.0.0\n";
+    writeFileSync(workflow, before);
+    git("add", ".");
+    const base = commitFixture(git, "base");
+    writeFileSync(workflow, before.replace("v1.0.0", "v2.0.0"));
+    git("add", ".");
+    commitFixture(git, "changed action");
+    const result = spawnSync(process.execPath, [
+      fileURLToPath(new URL("./eligible-upgrades.mjs", import.meta.url)),
+      "--base",
+      base,
+      "--json",
+    ], {
+      cwd: dir,
+      env,
+      encoding: "utf8",
+    });
+    assert.equal(
+      result.status,
+      2,
+      `expected unsupported non-inline uses exit 2; stderr: ${result.stderr}`,
+    );
+    const report = JSON.parse(result.stdout);
+    assert.equal(report.rows.length, 1);
+    assert.equal(report.rows[0].coverage, "unsupported");
+    assert.equal(report.rows[0].current_evidence.status, "unknown");
+  } finally {
     rmSync(dir, { recursive: true, force: true });
   }
 });
@@ -759,6 +838,7 @@ test("extractUses reads nested jobs/steps, quoted values, comments and flow maps
     "./local",
     "docker://image:1",
     "${{ matrix.action }}",
+    "uses:",
     "owner/nested@v6",
   ]);
   assert.deepEqual(extractUses(""), []);
