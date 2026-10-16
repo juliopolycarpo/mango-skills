@@ -149,7 +149,8 @@ Submitted review body uses `PUT repos/OWNER/REPO/pulls/NUMBER/reviews/REVIEW_ID`
 `body` field. Verify the author, review ID, and permissions before editing.
 
 When posting is authorized, create one conversation comment or reply to an existing inline
-review comment. Choose exactly one surface; these are alternatives.
+review comment. Choose exactly one surface; these are alternatives. For a PR conversation
+comment, use `$pr_number` in place of `$issue_number` in the issue endpoint below.
 
 ```bash
 gh api --method POST "repos/$repo_owner/$repo_name/issues/$issue_number/comments" -F body=@"$comment_file"
@@ -165,7 +166,10 @@ was requested. Resolve authorized, verified review threads through GraphQL using
 thread node ID, then re-fetch the thread state:
 
 ```bash
-gh api graphql -f query='mutation($threadId:ID!){resolveReviewThread(input:{threadId:$threadId}){thread{id,isResolved}}}' -f threadId="$thread_id"
+result=$(gh api graphql -f query='mutation($threadId:ID!){resolveReviewThread(input:{threadId:$threadId}){thread{id,isResolved}}}' -f threadId="$thread_id") || exit 1
+jq -e --arg thread_id "$thread_id" \
+  '.errors == null and .data.resolveReviewThread.thread.id == $thread_id and .data.resolveReviewThread.thread.isResolved == true' \
+  >/dev/null <<<"$result" || exit 1
 ```
 
 ## Sources
