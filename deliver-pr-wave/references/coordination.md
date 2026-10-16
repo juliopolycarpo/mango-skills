@@ -61,9 +61,29 @@ worktree's own `target/`, not a RAM-backed temp directory.
 
 ### Recover an orphaned worktree
 
-If a crash or disk-full event leaves a worktree without Git metadata, build a temporary index
-instead of touching the main one: set `GIT_INDEX_FILE` to a scratch path, `git read-tree <base>`,
-`git add -A`, then diff against the base to recover the work.
+If a crash or disk-full event leaves a worktree without Git metadata, locate surviving
+repository metadata containing the base object and verify it belongs to this project. If none
+survives, recover a repository and its base objects before proceeding. Use absolute paths for
+`GIT_DIR` (the surviving Git directory) and `GIT_WORK_TREE` (the orphaned files), and an index
+path outside the orphaned tree. Create a unique branch-prefixed scratch directory; the index
+file inside it must not exist yet. An empty file from `mktemp` is not a valid index.
+
+In a subshell, set those three variables without changing the repository's normal index:
+
+```bash
+(
+  export GIT_DIR="$surviving_git_dir"
+  export GIT_WORK_TREE="$orphaned_worktree"
+  export GIT_INDEX_FILE="$branch_scratch_dir/recovery.index"
+  git read-tree "$base_ref" &&
+    git add -A &&
+    git diff --cached --binary "$base_ref" -- > "$branch_scratch_dir/recovery.patch"
+)
+```
+
+Run from the orphaned worktree root. Check each command's exit status and inspect the patch,
+including new and deleted files. `git add -A` follows ignore rules; inspect ignored files
+separately and preserve any wanted recovery files before removing the orphaned directory.
 
 ## Scratch paths
 
