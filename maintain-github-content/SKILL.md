@@ -1,6 +1,6 @@
 ---
 name: maintain-github-content
-description: "Use to maintain GitHub PRs, issues, comments, triage metadata, and repository content through evidence-based audits and verified updates."
+description: "Keep GitHub context aligned with ongoing work. Use to review and update related PRs, issues, comments, and metadata when changes or new findings make them stale."
 ---
 
 # Maintain GitHub content
