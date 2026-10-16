@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" fill="none" role="img" aria-labelledby="title">
-  <title id="title">Update PR metadata: edit the pull request description</title>
+  <title id="title">Maintain GitHub content: edit PRs, issues, and comments</title>
   <rect x="2" y="2" width="60" height="60" rx="16" fill="#1D4ED8"/>
   <g stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
     <path d="M28 50H19a4 4 0 0 1-4-4V18a4 4 0 0 1 4-4h20a4 4 0 0 1 4 4v8"/>
