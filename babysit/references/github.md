@@ -86,12 +86,15 @@ an actionable finding solely because GitHub marks its old line as outdated.
 
 ## Polling
 
-- `gh pr checks --json ...` exits non-zero (8) while any check is pending, though its JSON is
-  valid. A loop written `s=$(gh pr checks ...) || continue` never fires; tolerate the exit
-  status (`|| true`) and parse the JSON instead.
+- For `gh pr checks --json ...`, require a successful lookup, validate the JSON, and inspect
+  every check's `bucket`. Exit 0 confirms the lookup, not passing checks. Preserve stderr and
+  exit status; failed lookups and missing or malformed payloads leave the inspection incomplete.
+  With tabular output, exit 8 means pending checks and exit 1 can mean failed checks or a
+  lookup error; inspect the result before deciding which action is needed.
 - Across several PRs, poll REST check runs every 90 seconds or slower and keep GraphQL for
-  review threads. Many concurrent `gh pr checks` pollers exhaust the GraphQL rate limit.
-- A live job's log comes from `gh api repos/$repo_slug/actions/jobs/$job_id/logs`; `gh run view
-  --log` refuses while the run is in progress.
+  review threads. Duplicate concurrent pollers consume the same API budget.
+- Download a completed job's logs with `gh api repos/$repo_slug/actions/jobs/$job_id/logs`,
+  even while other jobs keep the run in progress. For output from a running job, use the
+  Actions UI; the REST download is not a live stream. Unavailable logs do not establish failure.
 - Poll loops that grep background output can match text the output merely quotes. Redirect raw
   output to a file, wait on an exit status, and inspect the file.
