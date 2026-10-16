@@ -37,7 +37,7 @@ requested task requires. Check installed tool versions before using version-depe
 | [update-pr-body](update-pr-body/SKILL.md)             | Refresh PR metadata from the current diff, template, and evidence  |
 
 Helpers have matching JavaScript and Python implementations. JavaScript helpers use only
-`node:` APIs and run under Node or Bun; Python helpers use the Python 3.9+ standard library.
+`node:` APIs and are tested under Node 24 and Bun; Python helpers use the Python 3.9+ standard library.
 Repository validation uses Bun. Some helper checks require Git with `merge-tree --write-tree`.
 
 ## Contribute
@@ -51,7 +51,8 @@ bun install --frozen-lockfile
 bun run check
 ```
 
-CI is configured for Linux and Windows.
+CI runs on Linux and Windows with Python 3.9 and 3.13, and tests the JavaScript helpers
+under Node 24 as well as Bun.
 
 ## License and sources
 

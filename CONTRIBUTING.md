@@ -19,17 +19,20 @@ an example of the result it should produce.
 
 ## Checks
 
-Use Bun 1.4.3, Python 3.9 or newer, and Git with `merge-tree --write-tree` support.
+Use Bun 1.4.3, Node 24 for helper compatibility checks, Python 3.9 or newer, and Git
+with `merge-tree --write-tree` support.
 
 ```bash
 bun install --frozen-lockfile
 bun run check
+bun run test:node
 ```
 
 Individual commands are `bun run validate`, `bun test`, `bun run test:python`,
 `bun run smoke`, and `bun run format:check`. Format with `bun run format`.
 The helper smoke uses synthetic Git history and named fakes, with no registry or GitHub
-requests. CI configures Linux and Windows checks.
+requests. CI runs the full checks on Linux and Windows with Python 3.9 and 3.13,
+and exercises the JavaScript helpers under Node 24 as well as Bun.
 
 Keep repeated readiness documents and shared GitHub query sections identical. The repository's
 `scripts/shared-guidance.test.mjs` checks these copies; update each copy together. The complete
