@@ -4,17 +4,18 @@ Use for titles, descriptions, validation evidence, and authorized triage metadat
 
 ## Inspect the current change
 
-Resolve the named PR or the current branch's PR with live GitHub data. If none exists,
-report that; create one only when requested. Record the URL, base, head SHA, draft state,
-title/body, labels, assignees, reviewers, milestone, and project membership as relevant.
-Read commits, changed files, and the actual diff. Paginate file and commit APIs when a
-summary is capped. A local checkout or changed-file list alone cannot establish behavior.
+Resolve the PR from live GitHub data and read its current title, body, and requested fields.
+If none exists, report that; create one only when requested.
 
-Read relevant conversation comments, submitted reviews, every review-thread page, and
-all comments in relevant threads. Inspect checks and receipts for the current head.
-Separate hosted checks, local runs, manual testing, native validation, and historical
-measurements. A prior run needs its SHA, environment, and limitation. Metadata maintenance
-does not require running tests or fixing code.
+- For a focused edit, inspect only the context needed to verify the affected claim. A title
+  correction does not require a full review or CI audit.
+- For a full refresh, record the base and head SHA; inspect commits, files, the diff,
+  relevant conversation, reviews, and current-head checks. Paginate relevant collections,
+  including comments within threads. Include resolved discussions when they explain decisions
+  or completed fixes. A changed-file list alone cannot establish behavior.
+
+Keep historical receipts tied to their SHA and environment. Metadata maintenance does not
+require running tests or fixing code.
 
 ## Find and preserve the template
 
@@ -36,10 +37,9 @@ validation, and relevant risks or follow-ups without inventing extra sections.
 
 ## Rewrite and triage
 
-Lead with the concrete trigger and resulting behavior. Scale detail to the diff. Include
-material migrations, flags, compatibility changes, documentation, and remaining work.
-Keep the title short and aligned with repository conventions and final scope. If
-Conventional Commits apply, retain `!` for a breaking change and explain the migration.
+Describe the problem and resulting behavior, including migrations and remaining work.
+Align the title with final scope and repository conventions; retain `!` for breaking changes
+when Conventional Commits apply.
 
 Preserve valid measurement receipts with their original SHA and conditions. Change numbers
 only from new measurements. Correct or remove inaccurate table rows and stale prose using

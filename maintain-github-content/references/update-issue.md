@@ -4,10 +4,10 @@ Maintain reports, requests, tracking, and lifecycle state from current evidence.
 
 ## Inspect and classify
 
-Read the issue's full body, state and reason, author, labels, assignees, milestone,
-relationships, project fields, and relevant conversation. Check linked PRs and source
-before calling work fixed or shipped. Search open and closed issues for duplicates and
-related reports; search results are discovery, not proof of absence.
+For a focused edit, read the issue and context needed to verify the changed claim. For a full
+refresh or triage pass, inspect state/reason, metadata, relationships, project fields, and
+relevant conversation. Check linked PRs and source before calling work fixed or shipped.
+Search open and closed issues when assessing duplicates; search results cannot prove absence.
 
 Read current contribution rules and `.github/ISSUE_TEMPLATE/` Markdown templates or YAML
 forms, including `config.yml`. Templates describe expected information; an existing issue
@@ -21,14 +21,11 @@ environments, minimal reproduction, impact, and available evidence. Distinguish 
 unverified report from a reproduced failure. Ask only for information needed to reproduce
 or choose a fix, and record what is already known.
 
-For requests, describe the user problem, intended outcome, scope, constraints, alternatives
-when relevant, and observable acceptance criteria. For tracking issues, distinguish shipped,
-open, blocked, and deferred work; link each concrete item. Preserve useful rationale and
-keep status consistent with linked implementation evidence.
+For requests, state the problem, scope, and observable acceptance criteria. For tracking
+issues, link shipped, open, blocked, and deferred work to implementation evidence.
 
-Write a searchable title naming the affected behavior. Retain the original report's meaning;
-use an attributed clarification or authorized comment when rewriting would erase history.
-Do not mark acceptance criteria complete because a PR exists or CI passed.
+Use a searchable title and preserve the reporter's meaning. Use an attributed clarification
+when rewriting would erase history. A PR or passing CI alone does not satisfy acceptance criteria.
 
 ## Triage and lifecycle
 
@@ -49,10 +46,7 @@ Do not mark acceptance criteria complete because a PR exists or CI passed.
 
 ## Save and verify
 
-Re-read title, body, update time, and changed fields before applying the focused edit.
-Preserve unrelated labels, assignments, and relationships; replacement arrays can remove
-existing values. Read back exact text, state/reason, and every requested metadata field.
-A failed field update may leave other fields changed; inspect before retrying.
-
-Report the issue URL, applied changes, open questions, and implementation links. File
-follow-ups only when the task authorizes creation; otherwise return concrete drafts.
+Follow the [common save and verification workflow](../SKILL.md#maintenance-workflow).
+Preserve unrelated metadata; replacement arrays can remove existing values. Verify state,
+reason, and relationships when changed. Report implementation links and open questions;
+create follow-ups only when authorized.

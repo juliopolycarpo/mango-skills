@@ -38,12 +38,7 @@ manual review mentions unless the task and policy permit them.
 
 ## Save and verify
 
-Draft exact Markdown, preserve code and quotations, and scan for private information.
-Re-read the exact comment before editing; reconcile changes since the initial read.
-Use a verified ID rather than an ambiguous last-comment selector. If the tool cannot edit
-that comment type, use an authorized API fallback or report the specific limitation;
-do not silently replace an edit with a new comment.
-
-Read the saved comment back and compare its ID, body, author, and parent. For a new comment,
-retain its returned URL and ID. On timeout, inspect for the already-created text before
-retrying. Report comment URLs, completed edits or replies, and unresolved findings.
+Follow the [common save and verification workflow](../SKILL.md#maintenance-workflow).
+Use the exact comment ID, not a last-comment selector. Verify the saved body, author, and
+parent; retain URLs and IDs for new comments. If editing that surface is unsupported, use
+an authorized API fallback or return the draft. Do not substitute a new comment for an edit.

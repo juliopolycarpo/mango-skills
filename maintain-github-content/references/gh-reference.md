@@ -58,6 +58,11 @@ of feedback.
 
 ## CLI targeting and inspection
 
+The thread loop above lists **unresolved threads** for actionable-review discovery. For a
+content audit that needs resolved decisions or completed fixes, remove
+`| select(.isResolved == false)` from the `jq` filter. Read the full relevant discussions
+in either case; the last-comment preview is insufficient.
+
 Use verified variables: `repo_slug` is `[HOST/]OWNER/REPO`, `repo_owner` and `repo_name`
 identify the API repository, and each number or ID comes from a live lookup. For an
 enterprise host, set the matching API hostname with `gh api --hostname`. Confirm the

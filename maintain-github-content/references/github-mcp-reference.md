@@ -1,9 +1,7 @@
 # GitHub MCP reference
 
-Use GitHub MCP when available and suitable for the task. Tool names may have connector
-prefixes and schemas vary by server version, host, enabled toolsets, and permissions.
-Discover the installed tools and read their actual schemas before calling them. An absent
-capability is a limitation, not authorization to substitute a different write.
+Discover installed tools and read their schemas before calling them; names and capabilities
+vary by server, host, and permissions. Missing capabilities do not authorize a different write.
 
 ## Discover and inspect
 
@@ -44,19 +42,6 @@ content when supplied, but validate the actual response shape.
 | Reply to an inline review comment        | `add_reply_to_pull_request_comment` with `pullNumber`, numeric `commentId`, and `body`                      |
 | Resolve a verified review thread         | `pull_request_review_write`, `method: resolve_thread`, with `threadId`, if the installed schema supports it |
 
-For example, after reading and reconciling the current issue, a body-only edit has this
-shape. Replace the example values with verified identifiers and the exact prepared text:
-
-```json
-{
-  "method": "update",
-  "owner": "example-owner",
-  "repo": "example-repo",
-  "issue_number": 42,
-  "body": "The exact prepared Markdown body."
-}
-```
-
 Do not include unrelated optional fields. Arrays such as labels and assignees may replace
 the whole collection; preserve current values when only an additive change is authorized.
 Discover supported labels, milestones, types, relationship tools, and project field values
@@ -69,10 +54,8 @@ Do not turn an unsupported edit into a new comment or a new review.
 
 ## Verification and failure recovery
 
-Apply the common re-read, reconcile, write, and readback workflow. A successful MCP call
-is insufficient: read the object again, compare exact text and requested metadata, and
-confirm the PR head SHA. Check every field after a partial failure. Before retrying a
-creation, search for its returned ID or matching content to prevent duplicate posts.
+Follow the [common save and verification workflow](../SKILL.md#maintenance-workflow).
+Retain returned IDs and URLs so readback and retry checks target the exact object.
 
 A read-only server or missing token permission cannot perform a write. Report the failed
 operation and preserve a resumable draft. Do not change server configuration, broaden
