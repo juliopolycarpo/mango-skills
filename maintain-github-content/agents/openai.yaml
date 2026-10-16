@@ -1,0 +1,7 @@
+interface:
+  display_name: "Maintain GitHub content"
+  short_description: "Maintain PRs, issues, comments, and triage metadata"
+  icon_small: "./assets/icon.svg"
+  icon_large: "./assets/icon.svg"
+  brand_color: "#1D4ED8"
+  default_prompt: "Use $maintain-github-content to audit and maintain the requested GitHub PRs, issues, comments, and triage metadata from current evidence and repository conventions."

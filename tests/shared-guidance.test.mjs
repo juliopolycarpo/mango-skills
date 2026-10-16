@@ -13,13 +13,17 @@ test("merge and squash readiness copies remain identical standalone resources", 
   expect(squash).toBe(merge);
 });
 
-test("PR metadata and babysitting retain identical status and thread query guidance", () => {
+test("GitHub content maintenance and babysitting retain identical status and thread query guidance", () => {
   const metadata = readFileSync(
-    new URL("../update-pr-body/references/github.md", import.meta.url),
+    new URL("../maintain-github-content/references/gh-reference.md", import.meta.url),
     "utf8",
   );
   const babysit = readFileSync(new URL("../babysit/references/github.md", import.meta.url), "utf8");
   const boundary = "\n## Reply to a thread\n";
+  const metadataBoundary = "\n## CLI targeting and inspection\n";
+  expect(metadata.includes(metadataBoundary)).toBe(true);
   expect(babysit.includes(boundary)).toBe(true);
-  expect(babysit.slice(0, babysit.indexOf(boundary)).trimEnd()).toBe(metadata.trimEnd());
+  expect(babysit.slice(0, babysit.indexOf(boundary)).trimEnd()).toBe(
+    metadata.slice(0, metadata.indexOf(metadataBoundary)).trimEnd(),
+  );
 });

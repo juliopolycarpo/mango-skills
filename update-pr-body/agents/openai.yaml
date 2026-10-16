@@ -1,7 +1,0 @@
-interface:
-  display_name: "Update PR metadata"
-  short_description: "Refresh PR titles and bodies from current evidence"
-  icon_small: "./assets/icon.svg"
-  icon_large: "./assets/icon.svg"
-  brand_color: "#1D4ED8"
-  default_prompt: "Use $update-pr-body to refresh this pull request's title and body from its current diff, base template, and validation evidence."
