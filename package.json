@@ -4,13 +4,13 @@
   "packageManager": "bun@1.4.3",
   "scripts": {
     "validate": "bun scripts/validate-skills.mjs",
-    "smoke": "bun scripts/smoke-helpers.mjs",
-    "test": "bun test",
-    "test:node": "node --test dependabot-rollup/scripts/javascript/eligible-upgrades.test.mjs merge-pr/scripts/javascript/verify-qualified-head.test.mjs squash-pr/scripts/javascript/verify-squash.test.mjs",
+    "smoke": "bun tests/smoke-helpers.mjs",
+    "test": "bun test ./tests",
+    "test:node": "node --test tests/dependabot-rollup/javascript/eligible-upgrades.test.mjs tests/merge-pr/javascript/verify-qualified-head.test.mjs tests/squash-pr/javascript/verify-squash.test.mjs",
     "test:python": "bun scripts/test-python.mjs",
     "format": "dprint fmt",
     "format:check": "dprint check",
-    "check": "bun run validate && bun test && bun run test:python && bun run smoke && bun run format:check"
+    "check": "bun run validate && bun run test && bun run test:python && bun run smoke && bun run format:check"
   },
   "devDependencies": {
     "dprint": "0.60.1",
