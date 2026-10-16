@@ -73,11 +73,20 @@ GitHub rebase merge rewrites identities and is unsuitable for preserved history.
 ## Stacked PRs
 
 When a parent lands by squash, obtain its final `headRefOid` from the parent PR, even if its
-branch was deleted. Record the child's old head, remote head and feature boundary, then use
-`git rebase --onto <fetched-new-base> <parent-final-head>` to replay only child commits. Compare
-old and new feature ranges with `git range-diff`, inspect dropped patches and upstream contract
-changes, and validate. Retarget the child PR, publish to its actual head ref with the recorded
-exact lease, and wait for fresh default-base checks before merging.
+branch was deleted. Record the child's old head and remote head. Recover the actual old parent
+boundary incorporated in that child's history from a recorded boundary, recovery ref, or
+reflog. The parent's final head may have been rewritten since the child branched; do not use
+it as the boundary unless ancestry and inspection prove it is the last incorporated parent
+commit. A merge-base with the rewritten parent does not establish that boundary.
+
+Verify `git merge-base --is-ancestor <old-child-boundary> <old-child-head>` succeeds and inspect
+`<old-child-boundary>..<old-child-head>` for only intended child work. If the boundary is
+unknown, preserve the branch and report the missing evidence. Replay with
+`git rebase --onto <fetched-new-base> <old-child-boundary>`. Compare old and new feature ranges
+with `git range-diff`, inspect changed or dropped patches, and verify parent changes removed
+during review remain absent. Review upstream contract changes and validate. Retarget the
+child PR, publish to its actual head ref with the recorded exact lease, and wait for fresh
+default-base checks before merging.
 
 ## Merge train
 
