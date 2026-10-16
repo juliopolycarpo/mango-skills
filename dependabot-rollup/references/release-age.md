@@ -74,14 +74,16 @@ object includes the merge-base SHA (`base`), pinned input base tip (`base_tip`),
 cutoff, rows, and uncovered paths. Concurrent ref updates cannot change the assessed snapshot. Each row
 reports `current_evidence`, candidates with individual evidence, `completeness`, and a
 `recommendation`. The current version must meet the same age and release policy as candidates.
-Both registry publication and GitHub release publication must predate the cutoff. Missing or
-invalid timestamps, absent current releases, missing repository metadata, failed requests, and
-incomplete listings produce `unknown` evidence, never an age-policy pass.
+For npm, both registry publication and GitHub release publication must predate the cutoff;
+Actions use GitHub release publication. Missing or invalid timestamps, missing repository
+metadata, failed requests, incomplete listings, and absent current Actions releases produce
+`unknown` evidence, never an age-policy pass.
 
 GitHub 404 responses are distinct from authentication, rate-limit, network, or parse errors.
 For npm, only successful 404 responses across the documented tag patterns establish “no GitHub
-release”; unsupported tag conventions need manual evidence. Actions releases are paginated
-through the last page. npm candidates are checked newest first through the first eligible
+release” and produce `ineligible` evidence; unsupported tag conventions need manual evidence.
+Actions releases are paginated through the last page. npm candidates are checked newest first
+through the first eligible
 version; lower versions need no further lookup. A higher candidate with unknown evidence keeps
 the highest-eligible recommendation unknown, even if a lower eligible version was found.
 Preview versions encountered in registry metadata are named in `preview_versions`.

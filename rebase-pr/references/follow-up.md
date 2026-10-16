@@ -46,9 +46,11 @@ fields; do not interpret an authentication, query, or check lookup failure as an
 Read the current title/body, commits, files, actual diff, and evidence at the final head. Load
 the template from the current base, checking `.github/PULL_REQUEST_TEMPLATE.md`,
 `.github/pull_request_template.md`, root/docs variants, and template directories. Follow
-contribution/title rules and preserve all template headings, checkboxes, and existing evidence
-tables. If several templates apply, use the one matching the change; without a template,
-write the problem/result, validation, and material risks or migrations.
+contribution/title rules and preserve template headings, checkboxes, and relevant evidence
+tables. Correct stale nonmeasurement rows from current evidence; retain relevant historical
+measurements with their original SHA and conditions. If several templates apply, use the one
+matching the change; without a template, write the problem/result, validation, and material
+risks or migrations.
 
 Keep title and description aligned with the final implementation, including any breaking
 migration and required `!`. Mark only proven checks complete. Separate current-head hosted CI,

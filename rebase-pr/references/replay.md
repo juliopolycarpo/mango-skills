@@ -17,7 +17,7 @@ git range-diff "$old_feature_base..$old_head" "$new_base..HEAD"
 ### Child of a squash-merged parent
 
 1. Record the child's old head and remote head before changing it. Obtain the parent's final
-   `headRefOid` with `gh pr view "$parent_pr" --json headRefOid`, even if its branch was
+   `headRefOid` with `gh pr view "$parent_pr" --repo "$repo_slug" --json headRefOid`, even if its branch was
    deleted. The final parent head describes reviewed parent content; it is not necessarily
    the boundary from which this child branched.
 2. Recover `old_feature_base`, the exact parent commit already included in the child's old
@@ -62,8 +62,10 @@ git push \
 Name recovery refs `refs/recovery/pr-<number>-before-rebase-<date>`. When several branches
 are rewritten together, push them in one `git push --atomic` with one
 `--force-with-lease=refs/heads/<branch>:<observed-old-sha>` per branch. For a signature-only
-rewrite, `git range-diff` must show only signature metadata and trailers changed. If the PR has
-already merged, audit its final tree and evidence instead of rebasing or pushing.
+rewrite, compare corresponding tree IDs and use `git range-diff` to confirm unchanged patches
+and only intended message or trailer changes. Range-diff does not compare signature headers;
+verify signatures separately using the [recreated-commit checks](follow-up.md#verify-recreated-commits).
+If the PR has already merged, audit its final tree and evidence instead of rebasing or pushing.
 
 If the lease fails, preserve the local result and inspect the new remote work. Reconcile it
 before any further push. Never turn the lease into an unconditional overwrite. Re-fetch the

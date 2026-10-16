@@ -19,33 +19,25 @@ Use the configured identity, not an account login. Do not expose private signing
 or override identity to satisfy a hook. Preserve legitimate contributor attribution without
 inventing sign-offs or co-authorship.
 
-For local commits, `git commit -S -F <file>` requests a cryptographic signature using the
-configured signing method. Add `--signoff` only when repository policy requires it and the
-configured committer can make the project's certification. A sign-off is an attestation,
-not a cryptographic signature. Git does not generate one merely because signing is enabled.
-If the environment provides a commit wrapper, inspect its behavior before combining it with
-explicit flags so trailers are not duplicated.
-
-Inspect the resulting commit, including signatures when required and trailers against the
-repository's policy. A signature header alone does not prove verification; distinguish an
-invalid signature from a verifier lacking trust information. Repair only within the task's
-authorized history range. For message-only changes, compare tree IDs and ensure no staged
-content entered the replacement.
-
 ## Local commits and replays
 
-Use `git commit -F <file>` with `-S` when signing is required and `--signoff` only for an
-applicable certification. Keep hooks enabled. Inspect the result of a rebase, cherry-pick
-or message replacement even when the command succeeds:
+Use `git commit -F <file>` with `-S` when signing is required and `--signoff` when policy
+requires it and the configured committer can make the certification. A sign-off is an
+attestation, not a cryptographic signature; enabling signing does not generate one. If a
+commit wrapper supplies trailers, inspect its behavior to avoid duplicates. Keep hooks enabled.
+
+Inspect commits after creation, rebase, cherry-pick, or message replacement:
 
 ```bash
 git log --format='%h|%G?|%cn <%ce>|%(trailers:key=Signed-off-by,valueonly,separator=;)' <base>..HEAD
 git show --format=fuller --stat HEAD
 ```
 
-Preserve legitimate contributor trailers. Do not rewrite unrelated upstream history. For
-message-only changes compare old and new tree IDs. Revalidate the final authorized range
-after the last replay, then use an exact lease for any authorized force-push.
+Verify signatures and trailers required by repository policy. A signature header alone does
+not prove verification; distinguish an invalid signature from missing verifier trust.
+Preserve legitimate contributor trailers and repair only within the authorized history range.
+For message-only changes, compare old and new tree IDs and exclude staged content. Revalidate
+the final range after the last replay, then use an exact lease for an authorized force-push.
 
 ## Hosted squash
 
