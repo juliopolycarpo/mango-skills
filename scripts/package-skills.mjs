@@ -31,7 +31,7 @@ const BUNDLE_ICON = "assets/mango-skills.svg";
 const MAX_ENTRIES = 5000;
 const MAX_ARCHIVE_BYTES = 100 * 1024 * 1024;
 // Archive names this packager owns in an output directory, across versions.
-const PACKAGE_ARCHIVE = /^(?:mango|skill)-.+\.zip$/;
+const PACKAGE_ARCHIVE = /^mango-.+\.zip$/;
 const IGNORED = new Set(["node_modules", ".git", "__pycache__", ".DS_Store"]);
 const SHARED_FIELDS = [
   "name",
@@ -146,8 +146,8 @@ function pluginFiles(root, plugin, skills, extra = []) {
 }
 
 /**
- * Describe every artifact for one version without writing it: the bundle plugin, one plugin per
- * skill and one standalone ZIP per skill.
+ * Describe every artifact for one version without writing it: the bundle plugin and one plugin
+ * per skill.
  * Example: plannedPackages(".", "1.2.3").map((artifact) => artifact.file)
  */
 export function plannedPackages(root, version) {
@@ -216,14 +216,7 @@ export function plannedPackages(root, version) {
       }, [skill]),
     };
   });
-  const standalone = skills.map((skill) => ({
-    kind: "skill",
-    name: skill.name,
-    file: `skill-${skill.name}-${version}.zip`,
-    skills: [skill.name],
-    files: skill.files.map((file) => ({ ...file, path: `${skill.name}/${file.path}` })),
-  }));
-  return [bundle, ...plugins, ...standalone];
+  return [bundle, ...plugins];
 }
 
 /**
@@ -445,33 +438,29 @@ export function archiveErrors(data, artifact, root, version) {
     folded.set(key, entry.path);
   }
   if (errors.length) return errors;
-  const skillRoot = artifact.kind === "skill" ? "" : "skills/";
+  const skillRoot = "skills/";
   const sources = new Map(collectSkills(root).map((skill) => [skill.name, skill]));
   const packaged = new Set();
   for (const path of files.keys()) {
     if (!path.startsWith(skillRoot)) {
       const allowed = ["plugin.json", ".codex-plugin/plugin.json", "LICENSE"];
       if (artifact.kind === "bundle") allowed.push(BUNDLE_ICON);
-      if (artifact.kind === "skill" || !allowed.includes(path)) {
+      if (!allowed.includes(path)) {
         fail(path, "only skill content, manifests and LICENSE");
       }
       continue;
     }
-    packaged.add(
-      artifact.kind === "skill" ? artifact.name : path.slice(skillRoot.length).split("/")[0],
-    );
+    packaged.add(path.slice(skillRoot.length).split("/")[0]);
   }
   if (JSON.stringify([...packaged].sort()) !== JSON.stringify([...artifact.skills].sort())) {
     fail(describe([...packaged].sort()), `skills ${describe(artifact.skills)}`);
   }
   for (const name of artifact.skills) {
-    const base = artifact.kind === "skill" ? "" : `skills/${name}/`;
+    const base = `${skillRoot}${name}/`;
     const expected = new Map(
       (sources.get(name)?.files ?? []).map((file) => [base + file.path, file.data]),
     );
-    const received = [...files.keys()].filter((path) =>
-      path.startsWith(base) && (base || !path.includes("plugin.json"))
-    );
+    const received = [...files.keys()].filter((path) => path.startsWith(base));
     for (const path of new Set([...expected.keys(), ...received])) {
       if (!files.has(path)) fail(`missing ${path}`, "every source skill file packaged");
       else if (!expected.has(path)) fail(`extra ${path}`, "only source skill files");
@@ -487,7 +476,7 @@ export function archiveErrors(data, artifact, root, version) {
         "description of at most 1024 characters",
       );
     }
-    if (artifact.kind !== "skill" && `${artifact.name}:${name}`.length > 64) {
+    if (`${artifact.name}:${name}`.length > 64) {
       fail(`${artifact.name}:${name}`, "plugin:skill identity of at most 64 characters");
     }
     if (skill && skill.length > 1024 * 1024) {
@@ -499,29 +488,27 @@ export function archiveErrors(data, artifact, root, version) {
       fail(`${base}SKILL.md`, "UTF-8 SKILL.md");
     }
   }
-  if (artifact.kind !== "skill") {
-    try {
-      const manifest = JSON.parse(files.get("plugin.json") ?? "null");
-      errors.push(
-        ...manifestErrors(manifest, {
-          name: artifact.name,
-          version,
-          hasFile: (path) => files.has(path),
-        }),
-      );
-      errors.push(
-        ...overlayErrors(
-          JSON.parse(files.get(".codex-plugin/plugin.json") ?? "null"),
-          manifest ?? {},
-        ),
-      );
-    } catch (error) {
-      fail(error.message, "parseable plugin.json and .codex-plugin/plugin.json");
-    }
+  try {
+    const manifest = JSON.parse(files.get("plugin.json") ?? "null");
+    errors.push(
+      ...manifestErrors(manifest, {
+        name: artifact.name,
+        version,
+        hasFile: (path) => files.has(path),
+      }),
+    );
+    errors.push(
+      ...overlayErrors(
+        JSON.parse(files.get(".codex-plugin/plugin.json") ?? "null"),
+        manifest ?? {},
+      ),
+    );
+  } catch (error) {
+    fail(error.message, "parseable plugin.json and .codex-plugin/plugin.json");
   }
   const directory = extract(
     [...files].filter(([path]) => path.startsWith(skillRoot)).map(([path, value]) => [
-      artifact.kind === "skill" ? `${artifact.name}/${path}` : path.slice(skillRoot.length),
+      path.slice(skillRoot.length),
       value,
     ]),
   );

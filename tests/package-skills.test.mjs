@@ -68,7 +68,7 @@ function retarget(artifact, change) {
   return writeZip(files);
 }
 
-test("a build writes the bundle, one plugin and one standalone ZIP per skill, and checksums", () => {
+test("a build writes the bundle, one plugin per skill, and checksums", () => {
   withBuild(({ out, built }) => {
     expect(built.map(({ kind, name, file, skills }) => ({ kind, name, file, skills }))).toEqual([
       {
@@ -79,8 +79,6 @@ test("a build writes the bundle, one plugin and one standalone ZIP per skill, an
       },
       { kind: "plugin", name: "mango-alpha", file: "mango-alpha-1.2.3.zip", skills: ["alpha"] },
       { kind: "plugin", name: "mango-beta", file: "mango-beta-1.2.3.zip", skills: ["beta"] },
-      { kind: "skill", name: "alpha", file: "skill-alpha-1.2.3.zip", skills: ["alpha"] },
-      { kind: "skill", name: "beta", file: "skill-beta-1.2.3.zip", skills: ["beta"] },
     ]);
     expect(readFileSync(join(out, "SHA256SUMS"), "utf8")).toBe(
       built.map((artifact) => `${artifact.sha256}  ${artifact.file}\n`).join(""),
@@ -150,20 +148,6 @@ test("an individual plugin uses the skill's listing metadata and icon", () => {
   });
 });
 
-test("a standalone skill ZIP holds one top-level skill directory", () => {
-  withBuild(({ out }) => {
-    const paths = readZip(readFileSync(join(out, "skill-alpha-1.2.3.zip")))
-      .filter((entry) => entry.type === "file").map((entry) => entry.path);
-    expect(paths).toEqual([
-      "alpha/LICENSE",
-      "alpha/SKILL.md",
-      "alpha/agents/openai.yaml",
-      "alpha/assets/icon.svg",
-      "alpha/references/guide.md",
-    ]);
-  });
-});
-
 test("archive validation reports missing, extra, changed and escaping entries", () => {
   withBuild(({ root }) => {
     const [bundle] = plannedPackages(root, "1.2.3");
@@ -205,13 +189,14 @@ test("archive validation requires the Codex overlay to match the portable manife
 
 test("extracted skills are checked for broken references", () => {
   withBuild(({ root }) => {
-    const skill = plannedPackages(root, "1.2.3").find((artifact) =>
-      artifact.file === "skill-alpha-1.2.3.zip"
+    const plugin = plannedPackages(root, "1.2.3").find((artifact) =>
+      artifact.name === "mango-alpha"
     );
-    const data = retarget(skill, (files) => {
-      files.find((file) => file.path === "alpha/SKILL.md").data += "\n[Gone](references/gone.md)\n";
+    const data = retarget(plugin, (files) => {
+      files.find((file) => file.path === "mango-alpha/skills/alpha/SKILL.md").data +=
+        "\n[Gone](references/gone.md)\n";
     });
-    expect(archiveErrors(data, skill, root, "1.2.3").join("\n")).toContain(
+    expect(archiveErrors(data, plugin, root, "1.2.3").join("\n")).toContain(
       "expected existing local target",
     );
   });
@@ -248,9 +233,11 @@ test("the Codex overlay may not declare components the portable manifest lacks",
 test("building keeps unrelated archives in the output directory", () => {
   withBuild(({ root, out }) => {
     writeFileSync(join(out, "unrelated.zip"), "keep");
+    writeFileSync(join(out, "skill-alpha-1.2.3.zip"), "not ours");
     writeFileSync(join(out, "mango-alpha-1.0.0.zip"), "stale");
     buildPackages({ root, version: "1.2.3", out });
     expect(readFileSync(join(out, "unrelated.zip"), "utf8")).toBe("keep");
+    expect(readFileSync(join(out, "skill-alpha-1.2.3.zip"), "utf8")).toBe("not ours");
     expect(readdirSync(out)).not.toContain("mango-alpha-1.0.0.zip");
   });
 });

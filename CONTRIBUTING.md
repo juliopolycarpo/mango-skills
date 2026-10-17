@@ -31,7 +31,7 @@ bun run test:node
 
 Individual commands are `bun run validate`, `bun run package`, `bun run test`,
 `bun run test:python`, `bun run smoke`, and `bun run format:check`. Format with `bun run format`.
-`bun run package` builds the plugin and skill ZIPs into the ignored `dist/` directory and validates
+`bun run package` builds the plugin ZIPs into the ignored `dist/` directory and validates
 the archives; pass `-- --version 1.2.3` to set the version (default `0.0.0`).
 The helper smoke uses synthetic Git history and named fakes, with no registry or GitHub
 requests. CI runs the full checks on Linux and Windows with Python 3.9 and 3.13,
