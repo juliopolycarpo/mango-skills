@@ -38,7 +38,7 @@ test("Python's zipfile extracts the archive with matching contents", () => {
     const archive = join(directory, "test.zip");
     writeFileSync(archive, writeZip(files));
     const script =
-      "import sys, zipfile\nz = zipfile.ZipFile(sys.argv[1])\nassert z.testzip() is None\nprint(z.read('pkg/skills/a/SKILL.md').decode(), end='')";
+      "import sys, zipfile\nz = zipfile.ZipFile(sys.argv[1])\nassert z.testzip() is None\nsys.stdout.buffer.write(z.read('pkg/skills/a/SKILL.md'))";
     const result = spawnSync(python, ["-I", "-c", script, archive], { encoding: "utf8" });
     expect(result.stderr).toBe("");
     expect(result.stdout).toBe("---\nname: a\n---\n");
