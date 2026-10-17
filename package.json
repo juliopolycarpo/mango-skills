@@ -4,13 +4,14 @@
   "packageManager": "bun@1.4.3",
   "scripts": {
     "validate": "bun scripts/validate-skills.mjs",
+    "package": "bun scripts/package-skills.mjs",
     "smoke": "bun tests/smoke-helpers.mjs",
     "test": "bun test ./tests",
     "test:node": "node --test \"tests/*/javascript/**/*.test.mjs\"",
     "test:python": "bun scripts/test-python.mjs",
     "format": "dprint fmt",
     "format:check": "dprint check",
-    "check": "bun run validate && bun run test && bun run test:python && bun run smoke && bun run format:check"
+    "check": "bun run validate && bun run package && bun run test && bun run test:python && bun run smoke && bun run format:check"
   },
   "devDependencies": {
     "dprint": "0.60.1",
