@@ -7,7 +7,6 @@ version.
 | ----------------------------- | ------------------------- | ---------------------------------------------- |
 | `mango-skills-<version>.zip`  | Plugin with every skill   | ChatGPT, Codex CLI and app                     |
 | `mango-<skill>-<version>.zip` | Plugin with one skill     | ChatGPT, Codex CLI and app                     |
-| `skill-<skill>-<version>.zip` | One `<skill>/` directory  | ChatGPT skill upload, any skills directory     |
 | `SHA256SUMS`                  | Checksums of the archives | Run `sha256sum -c SHA256SUMS --ignore-missing` |
 
 Install either the bundle or individual plugins. Installing both gives you two copies of the
@@ -24,8 +23,8 @@ implementations.
 
 Upload a plugin ZIP from the workspace's plugin settings. Depending on workspace policy, an admin
 or a member with plugin upload permission does this. To update, open the plugin's details and
-upload the new version's ZIP. To add a single skill without a plugin, upload a `skill-*.zip` under
-Skills > Create > Upload from your computer.
+upload the new version's ZIP. Upload a plugin ZIP, not a bare skill directory: ChatGPT's skill
+upload rejects a ZIP that holds only `<skill>/SKILL.md`.
 
 ChatGPT validates the archive on upload and scans each skill. Check that every expected skill
 appears afterward. OpenAI does not document which runtimes ChatGPT gives skill scripts. The
@@ -67,14 +66,16 @@ separately. Do not edit the cache.
 
 ## Codex IDE extension and other skill directories
 
-Plugins are not available in the Codex IDE extension. Extract `skill-<skill>-<version>.zip` into
-`~/.agents/skills/` for every project, or into a repository's `.agents/skills/` for that
-project. To update, replace the skill directory.
+Plugins are not available in the Codex IDE extension. Extract a plugin ZIP and copy the skill
+directories under its `skills/` into `~/.agents/skills/` for every project, or into a repository's
+`.agents/skills/` for that project. To update, replace the skill directory. Claude and other
+agents that read skill directories install the same copies.
 
 ## Codex cloud
 
-Codex cloud loads skills committed to the repository, not personal plugins or skills. Extract
-the skill ZIPs into the repository's `.agents/skills/` and commit them. Cloud tasks run without
+Codex cloud loads skills committed to the repository, not personal plugins or skills. Copy the
+skill directories from a plugin ZIP's `skills/` into the repository's `.agents/skills/` and commit
+them. Cloud tasks run without
 network access by default, so workflows that call GitHub need it enabled for the environment.
 
 ## Verified installs
@@ -85,4 +86,5 @@ network access by default, so workflows that call GitHub need it enabled for the
 | Codex app 26.1013 on Windows (bundled `codex.exe` 0.163.0-alpha.10.2)       | ZIPs extracted with `Expand-Archive` install from a local marketplace. All bundle skills, the individual plugin's skill and a repository `.agents/skills` skill are discovered. Helpers run from the installed copy under Node 24 and Python 3.14. |
 | `codex app-server` 0.163.0, the backend for the Codex app and IDE extension | `skills/list` reports plugin, user and repository skills with icons and no errors. `plugin/list` reports the plugins as installed and enabled.                                                                                                     |
 | Python `zipfile`, Info-ZIP, PowerShell `Expand-Archive`                     | Every archive extracts. Python and Info-ZIP also pass CRC checks.                                                                                                                                                                                  |
-| ChatGPT web and Work, Codex cloud                                           | Not yet tested. The instructions follow OpenAI's documentation. Codex cloud uses repository `.agents/skills`, which the local checks above cover.                                                                                                  |
+| ChatGPT web and Work                                                        | The bundle and individual plugin ZIPs upload and work. ChatGPT's skill upload rejected bare skill ZIPs, so releases do not include them.                                                                                                           |
+| Codex cloud                                                                 | Not yet tested. Codex cloud uses repository `.agents/skills`, which the local checks above cover.                                                                                                                                                  |
