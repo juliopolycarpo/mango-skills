@@ -5,8 +5,8 @@ includes its own workflow and references, so you can install only the ones you u
 
 ## Use a skill
 
-To install the skills as a ChatGPT or Codex plugin, or as standalone skill ZIPs, see
-[INSTALL.md](INSTALL.md).
+To install the skills as a ChatGPT or Codex plugin, or to copy skill directories out of a
+plugin ZIP, see [INSTALL.md](INSTALL.md).
 
 You can also copy a complete skill directory into your agent's configured skills directory, including its
 `references`, `scripts`, `agents`, license notices, and `assets` when present. The destination
