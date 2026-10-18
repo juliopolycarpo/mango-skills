@@ -53,3 +53,31 @@ copies stay inside their skill directories so installed skills need no sibling r
 Use Conventional Commit subjects such as `fix(rebase-pr): preserve the recorded remote head`
 and a body describing why the change is needed. Follow any additional contribution policy
 adopted by the repository. Keep source attribution with each independently copied skill.
+
+## Releases
+
+Every release covers the whole repository with one version. A release is due when a merge to
+`main` changes the packaged payload: any file in a skill directory, `LICENSE`, the bundle icon,
+or packaging code that changes archive contents. Changes to tests, CI, and repository docs such
+as this file never make a release due, whatever the commit type.
+
+The version starts at 0.1.0. Each release bumps the patch, or the minor when a commit since the
+last release has `!` before its subject colon or a `BREAKING CHANGE:` footer. The major does not
+change.
+
+After Check passes on `main`, the Release candidate workflow keeps one draft release for the
+next version, with the archives, `SHA256SUMS`, `release.json`, and the command that publishes it:
+
+```bash
+git tag -s vX.Y.Z <sha> -m "mango-skills X.Y.Z" && git push origin vX.Y.Z
+```
+
+Only the owner can push the signed tag. The Release workflow then checks that GitHub verified
+the tag signature and that the commit is on `main` and passed Check. It recomputes the plan,
+rebuilds and validates the archives, publishes the draft, and verifies the downloaded hashes.
+It does not reuse the draft's files. Published releases are immutable; a rerun only verifies
+the release. Drafting and publishing share a concurrency group, and GitHub replaces a queued
+run when another one queues behind it, so rerun the Release workflow if its tag run was
+cancelled while waiting. Tagging an older commit than the draft's source publishes that
+commit; the newer changes get a draft on the next push to `main`, or when you re-run the latest
+Release candidate run. Run `bun run release plan --sha HEAD` to preview the decision locally.
