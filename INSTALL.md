@@ -1,6 +1,8 @@
 # Install Mango Skills packages
 
-`bun run package` builds these archives into `dist/`. Every archive in one build has the same
+Download the archives from the repository's
+[GitHub Releases](https://github.com/juliopolycarpo/mango-skills/releases), or run
+`bun run package` to build them into `dist/`. Every archive in one release or build has the same
 version.
 
 | Archive                       | Contents                  | Install it in                                  |
@@ -8,6 +10,14 @@ version.
 | `mango-skills-<version>.zip`  | Plugin with every skill   | ChatGPT, Codex CLI, app and IDE extension      |
 | `mango-<skill>-<version>.zip` | Plugin with one skill     | ChatGPT, Codex CLI, app and IDE extension      |
 | `SHA256SUMS`                  | Checksums of the archives | Run `sha256sum -c SHA256SUMS --ignore-missing` |
+
+Each release also has `release.json`, which records the version, the source commit SHA, a
+digest of the packaged payload, a digest per skill, and the SHA-256 of every archive. Check the
+downloaded archives before installing them:
+
+```bash
+sha256sum -c SHA256SUMS --ignore-missing
+```
 
 Install either the bundle or individual plugins. Installing both gives you two copies of the
 same skill. Plugins are named `mango-skills` and `mango-<skill>`, so Codex lists their skills as

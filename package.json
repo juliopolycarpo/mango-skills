@@ -5,6 +5,7 @@
   "scripts": {
     "validate": "bun scripts/validate-skills.mjs",
     "package": "bun scripts/package-skills.mjs",
+    "release": "bun scripts/release.mjs",
     "smoke": "bun tests/smoke-helpers.mjs",
     "test": "bun test ./tests",
     "test:node": "node --test \"tests/*/javascript/**/*.test.mjs\"",
